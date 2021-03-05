@@ -153,8 +153,45 @@ if __name__ == "__main__":
 
 
 class MultiHeadAttention(Layer):
-    pass
+    
+    def __init__(
+        self,
+        num_heads,
+        size_per_head,
+        attention_dropout=0.1
+    ):
+        self.num_heads = num_heads
+        self.size_per_head = size_per_head
+        self.units = num_heads * size_per_head
+        self.attention_dropout = attention_dropout
 
+    def build(self, input_shape):
+        self.q_dense = Dense(
+            self.units,
+            kernel_initializer="glorot_uniform",
+            name="query"
+        )
+        self.k_dense = Dense(
+            self.units,
+            kernel_initializer="glorot_uniform",
+            name="key"
+        )
+        self.v_dense = Dense(
+            self.units,
+            kernel_initializer="glorot_uniform",
+            name="value"
+        )
+        self.dropout = Dropout(self.attention_dropout)
+
+    def compute_mask(self, inputs, mask=None):
+        # mask向下传递
+        return mask
+
+    def call(self, inputs, mask=None, training=None):
+        pass
+
+    def _transpose(self, tensor, seq_len):
+        pass
 
 class FFN(Layer):
     pass

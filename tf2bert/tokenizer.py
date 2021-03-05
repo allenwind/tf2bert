@@ -12,11 +12,20 @@ class Tokenizer:
         pass
         self.spaces = set([" ", "\n", "\r", "\t"])
 
-    def encode(self, ):
+    def encode(self, *texts, maxlen):
+        """输出token ids和segment ids"""
+        pass
+
+    def decode(self, ids):
+        """把token ids转换为文本"""
+        pass
+
+    def tokenize(self, text):
         pass
 
 
-
+    def _tokenize(self, text, ):
+        pass
 
 
     def _is_space(ch):
