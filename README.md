@@ -1,3 +1,3 @@
 # tf2bert
 
-WIP...
+全面拥抱Python3和Tensorflow2.x
