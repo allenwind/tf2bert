@@ -1,30 +1,32 @@
+import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing import sequence
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import *
-from sklearn.model_selection import train_test_split
-from sklearn import metrics
-
-from dataset import load_THUCNews_title_label
-from dataset import load_hotel_comment
-from dataset import load_weibo_senti_100k
-from dataset import load_simplifyweibo_4_moods
-from dataset import SimpleTokenizer, find_best_maxlen
-from pooling import MaskGlobalMaxPooling1D
+from tensorflow.keras.preprocessing import sequence
+from tf2bert.layers import MaskedGlobalMaxPooling1D
+from tf2bert.text.tokenizers import CharTokenizer
+import dataset
 
 # 添加梯度惩罚的loss
+
+def gelu(x):
+    return 0.5 * x * (1.0 + tf.math.erf(x / tf.sqrt(2.0)))
+
+def norm(x):
+    return tf.sqrt(tf.reduce_sum(tf.square(x)))
 
 class GradientPenalty(tf.keras.Model):
     """在train_step中实现梯度惩罚的逻辑"""
 
-    def compile(self, epsilon, embedding_name, **kwargs):
+    def compile(self, eps, layer_name="embedding", **kwargs):
         super(GradientPenalty, self).compile(**kwargs)
-        self.epsilon = epsilon
-        self.embedding_name = embedding_name
+        self.eps = eps
+        # Embedding层的名字
+        self.layer_name = layer_name
 
     def gradient_penalty(self, x, y):
         # 计算gradient penalty
-        embedding_layer = self.get_layer(self.embedding_name)
+        embedding_layer = self.get_layer(self.layer_name)
         embeddings = embedding_layer.embeddings
         with tf.GradientTape() as tape:
             tape.watch(embeddings)
@@ -42,7 +44,7 @@ class GradientPenalty(tf.keras.Model):
             y_pred = self(x, training=True)
             loss = self.compiled_loss(y, y_pred)
             gp = self.gradient_penalty(x, y)
-            total_loss = loss + 0.5 * self.epsilon * gp
+            total_loss = loss + 0.5 * self.eps * gp
 
         grads = tape.gradient(total_loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(grads, self.trainable_variables))
@@ -51,83 +53,97 @@ class GradientPenalty(tf.keras.Model):
         results.update(gp=gp)
         return results
 
-# 处理数据
-X, y, classes = load_THUCNews_title_label()
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    train_size=0.8,
-    random_state=7432
-)
 
+def batch_pad(X, maxlen=None, dtype="int32"):
+    if maxlen is None:
+        maxlen = max([len(i) for i in X])
+    X = sequence.pad_sequences(
+        X, 
+        maxlen=maxlen,
+        dtype=dtype,
+        padding="post",
+        truncating="post",
+        value=0
+    )
+    return X
+
+class DataGenerator(tf.keras.utils.Sequence):
+
+    def __init__(self, X, y, num_classes, batch_size):
+        self.X = X
+        self.y = y
+        self.num_classes = num_classes
+        self.batch_size = batch_size
+
+    def __len__(self):
+        return len(self.X) // self.batch_size
+
+    def __getitem__(self, index):
+        i = index * self.batch_size
+        j = i + self.batch_size
+        X = self.X[i:j]
+        y = self.y[i:j]
+        y = tf.keras.utils.to_categorical(y, num_classes)
+        return batch_pad(X, maxlen=None), np.array(y)
+
+    def on_epoch_end(self):
+        np.random.RandomState(773).shuffle(self.X)
+        np.random.RandomState(773).shuffle(self.y)
+
+def split_kfolds(X, y, n_splits=8):
+    X_train = [j for i, j in enumerate(X) if i % n_splits != 1]
+    y_train = [j for i, j in enumerate(y) if i % n_splits != 1]
+    X_test = [j for i, j in enumerate(X) if i % n_splits == 1]
+    y_test = [j for i, j in enumerate(y) if i % n_splits == 1]
+    return (X_train, y_train), (X_test, y_test)
+
+X, y, classes = dataset.load_hotel_comment()
 num_classes = len(classes)
-# 转化成字id
-tokenizer = SimpleTokenizer()
-tokenizer.fit(X_train)
-X_train = tokenizer.transform(X_train)
-X_test = tokenizer.transform(X_test)
 
-maxlen = find_best_maxlen(X_train, mode="max")
-maxlen = 48
-
-X_train = sequence.pad_sequences(
-    X_train,
-    maxlen=maxlen,
-    dtype="int32",
-    padding="post",
-    truncating="post",
-    value=0.0
-)
-
-X_test = sequence.pad_sequences(
-    X_test,
-    maxlen=maxlen,
-    dtype="int32",
-    padding="post",
-    truncating="post",
-    value=0.0
-)
-
-y_train = tf.keras.utils.to_categorical(y_train)
-y_test = tf.keras.utils.to_categorical(y_test)
-
-# 模型
+tokenizer = CharTokenizer(mintf=10)
+tokenizer.fit(X)
 num_words = len(tokenizer)
-embedding_dims = 128
+maxlen = None
+embedding_dim = 128
+hdim = 128
+gradient_penalty = True
+
+embedding = Embedding(
+    input_dim=num_words,
+    output_dim=embedding_dim,
+    mask_zero=False,
+    name="embedding"
+)
+
+conv1 = Conv1D(filters=hdim, kernel_size=2, padding="same", activation=gelu)
+conv2 = Conv1D(filters=hdim, kernel_size=2, padding="same", activation=gelu)
+conv3 = Conv1D(filters=hdim, kernel_size=3, padding="same", activation=gelu)
+pool = MaskedGlobalMaxPooling1D(return_scores=False)
 
 inputs = Input(shape=(maxlen,))
 mask = Lambda(lambda x: tf.not_equal(x, 0))(inputs)
-embedding = Embedding(
-    num_words,
-    embedding_dims,
-    embeddings_initializer="glorot_normal",
-    name="embedding",
-    input_length=maxlen)
-x = embedding((inputs))
-x = Dropout(0.1)(x)
-x = Conv1D(filters=128,
-           kernel_size=3,
-           padding="same",
-           activation="relu",
-           strides=1)(x)
-x, _ = MaskGlobalMaxPooling1D()(x, mask=mask)
+x = embedding(inputs)
+x = LayerNormalization()(x)
+x = Dropout(0.2)(x)
+x = conv1(x)
+x = conv2(x)
+x = conv3(x)
+x = pool(x, mask=mask)
 x = Dense(128)(x)
-x = Dropout(0.1)(x)
-x = Activation("relu")(x)
+x = Dropout(0.2)(x)
 outputs = Dense(num_classes, activation="softmax")(x)
 
-with_gradient_penalty = True
-if with_gradient_penalty:
-    model = GradientPenalty(inputs=inputs, outputs=outputs)
+if gradient_penalty:
+    model = GradientPenalty(inputs, outputs)
     model.compile(
         loss="categorical_crossentropy",
         optimizer="adam",
         metrics=["accuracy"],
-        embedding_name="embedding",
-        epsilon=1.0
+        layer_name="embedding",
+        eps=0.9
     )
 else:
-    model = Model(inputs=inputs, outputs=outputs)
+    model = Model(inputs, outputs)
     model.compile(
         loss="categorical_crossentropy",
         optimizer="adam",
@@ -136,18 +152,18 @@ else:
 
 model.summary()
 
-# 训练
-batch_size = 32
-epochs = 10
-callbacks = []
-model.fit(
-    X_train,
-    y_train,
-    batch_size=batch_size,
-    epochs=epochs,
-    callbacks=callbacks,
-    validation_split=0.2
-)
-
-# 评估
-model.evaluate(X_test, y_test)
+if __name__ == "__main__":
+    print(__file__)
+    batch_size = 64
+    epochs = 10
+    X = tokenizer.transform(X)
+    (X_train, y_train), (X_test, y_test) = split_kfolds(X, y, 5)
+    dataset_train = DataGenerator(X_train, y_train, num_classes, batch_size)
+    dataset_val = DataGenerator(X_test, y_test, num_classes, batch_size)
+    model.fit(
+        dataset_train,
+        batch_size=batch_size,
+        epochs=epochs,
+        validation_data=dataset_val,
+        validation_batch_size=batch_size
+    )
