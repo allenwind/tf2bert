@@ -23,7 +23,7 @@ def batch_pad(X, maxlen=None, dtype="int32"):
     )
     return X
 
-def smooth_labels(y, eps, num_classes):
+def smooth_labels(y, num_classes, eps):
     """常规的标签平滑"""
     y = y * (1 - eps) + (1 - y) * eps / (num_classes - 1)
     return y

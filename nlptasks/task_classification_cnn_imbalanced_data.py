@@ -10,8 +10,9 @@ from tf2bert.text.tokenizers import CharTokenizer
 import dataset
 
 # 正负样本不平衡的处理方法：
-# 1. 类别权重方法
-# 2. 上采样方法
+# 1.类别权重方法
+# 2.上采样或下采样方法，使得每个batch内样本平衡
+# 3.从输出参数阈值判别，默认是alpha=0.5，可以调小
 
 def gelu(x):
     return 0.5 * x * (1.0 + tf.math.erf(x / tf.sqrt(2.0)))
