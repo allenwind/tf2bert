@@ -8,12 +8,13 @@ class CRF(tf.keras.layers.Layer):
 
     def __init__(self, lr_multiplier=1, trans_initializer="glorot_uniform", trainable=True, **kwargs):
         super(CRF, self).__init__(**kwargs)
-        self.supports_masking = True
+        # 设置分层学习率
         self.lr_multiplier = lr_multiplier
         if isinstance(trans_initializer, str):
             trans_initializer = tf.keras.initializers.get(trans_initializer)
         self.trans_initializer = trans_initializer
         self.trainable = trainable
+        self.supports_masking = True
 
     def build(self, input_shape):
         assert len(input_shape) == 3
@@ -87,7 +88,9 @@ class CRFModel(tf.keras.Model):
     def predict_step(self, data):
         # 预测阶段，模型只返回viterbi tags即可
         x, *_ = tf.keras.utils.unpack_x_y_sample_weight(data)
-        viterbi_tags, *_ = self(x, training=False)
+        viterbi_tags, potentials, *_ = self(x, training=False)
+        if self.return_potentials:
+            return viterbi_tags, potentials
         return viterbi_tags
 
     def compute_loss(self, x, y, sample_weight, training):
