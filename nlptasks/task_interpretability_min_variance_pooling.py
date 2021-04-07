@@ -115,7 +115,7 @@ pool_model = Model(inputs, w)
 if __name__ == "__main__":
     print(__file__)
     batch_size = 64
-    epochs = 1
+    epochs = 10
     Xv = X[:100].copy()
     yv = y[:100].copy()
     X = tokenizer.transform(X)

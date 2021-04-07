@@ -68,6 +68,7 @@ def split_kfolds(X, y, n_splits=8):
     return (X_train, y_train), (X_test, y_test)
 
 def show_visualization(model, gradient_model, text, labelid, id2label, tokenizer):
+    """对比梯度和基本梯度的效果"""
     embeddings = model.layers[1].embeddings # embedding矩阵
     values = tf.Variable(embeddings) # 保存embedding矩阵以便恢复
     X = [text]
@@ -83,6 +84,7 @@ def show_visualization(model, gradient_model, text, labelid, id2label, tokenizer
 
     grads = []
     n = 30
+    # 计算积分梯度
     for alpha in np.linspace(0, 1, n):
         # 让embedding矩阵渐变
         embeddings.assign(alpha * values)
@@ -161,7 +163,7 @@ gradient_model.summary()
 if __name__ == "__main__":
     print(__file__)
     batch_size = 64
-    epochs = 1
+    epochs = 10
     Xv = X[:100].copy()
     yv = y[:100].copy()
     X = tokenizer.transform(X)
