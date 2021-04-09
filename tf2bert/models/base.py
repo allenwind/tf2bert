@@ -1,5 +1,7 @@
 from tensorflow.keras.models import Model
 
+# 模型构建和权重加载的API定义
+
 class ModelBuilder:
     """创建模型的流程"""
 
@@ -10,17 +12,20 @@ class ModelBuilder:
         raise NotImplementedError
 
     def build_embeddings(self, inputs):
+        """构建Embedding层"""
         raise NotImplementedError
 
     def build_layer(self, inputs=None, layer=None, callkwargs=None, **kwargs):
-        """创建一个层并连接输入返回输出,
+        """创建一个隐层并连接输入返回输出以及保存元数据,
         outputs=layer(**kwargs)(inputs, **callkwargs)"""
         raise NotImplementedError
 
     def build_hidden_layer(self, inputs, index):
+        """构建隐层"""
         raise NotImplementedError
 
     def build_all_hidden_layers(self, inputs, num_hidden_layers):
+        """构建所有隐层"""
         x = inputs
         for index in range(num_hidden_layers):
             x = self.build_hidden_layer(x, index)
@@ -32,6 +37,7 @@ class ModelBuilder:
         raise NotImplementedError
 
     def build_model(self):
+        """构建完整的模型"""
         inputs = self.build_inputs()
         x = self.build_embeddings(inputs)
         x = self.build_all_hidden_layers(x, self.num_hidden_layers)
@@ -42,8 +48,9 @@ class ModelBuilder:
 class CheckpointLoader:
 
     def variables_mapping(self):
-        """如果需要权重映射，则在这里返回"""
+        """如果需要权重映射，则在这里返回，否则返回空字典"""
         raise NotImplementedError
 
     def load_checkpoint(self, checkpoint):
+        """从checkpoint文件为layer加载weight"""
         raise NotImplementedError
