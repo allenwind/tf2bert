@@ -104,3 +104,7 @@ class CRFModel(tf.keras.Model):
         viterbi_tags, potentials, lengths, trans = y_pred
         mask = tf.sequence_mask(lengths, y_true.shape[1])
         return self.accuracy_fn(y_true, viterbi_tags, mask)
+
+class CRFWrapper(tf.keras.layers.Wrapper):
+    # 参考 WeightNormalization
+    pass

@@ -46,6 +46,7 @@ class ModelBuilder:
         return self.model
 
 class CheckpointLoader:
+    """加载checkpoint的抽象"""
 
     def variables_mapping(self):
         """如果需要权重映射，则在这里返回，否则返回空字典"""

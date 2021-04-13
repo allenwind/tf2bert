@@ -2,6 +2,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import *
 from tensorflow.keras import initializers
 
+# 常见的Pooling层
+
 class MaskedGlobalMaxPooling1D(Layer):
     
     def __init__(self, return_scores=False, **kwargs):
