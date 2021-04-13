@@ -67,7 +67,7 @@ class Transformer(ModelBuilder, CheckpointLoader):
         self.builted = False
         self.layers = {}
         self.model = None
-        # 全局初始化器
+        # 全局初始化器，构建层时的参数初始化器
         self.initializer = initializers.TruncatedNormal(stddev=0.02)
 
     def load_checkpoint(self, checkpoint):
@@ -102,7 +102,14 @@ class Transformer(ModelBuilder, CheckpointLoader):
         return outputs
 
     def compute_attention_mask(self, inputs=None):
+        """获取attention矩阵的mask，如lm mask、unilm mask，用于语言模型。"""
         return self.attention_mask
 
     def compute_position_bias(self, inputs=None):
+        """处理位置编码，不同Transformer模型有"""
         return self.position_bias
+
+    def show_inputs_outputs(self):
+        if self.builted:
+            print(self.model.inputs)
+            print(self.model.outputs)
