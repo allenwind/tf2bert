@@ -38,9 +38,9 @@ class CRF(tf.keras.layers.Layer):
     def call(self, inputs, mask=None):
         # 必须要有相应的mask传入
         # 传入方法：
-        # 1.手动传入
+        # 1.手动计算并传入
         # 2.设置Masking层
-        # 3.Embedding层设置mask_zero=True
+        # 3.Embedding层参数设置mask_zero=True
         assert mask is not None
         lengths = tf.reduce_sum(tf.cast(mask, tf.int32), axis=-1)
         viterbi_tags, _ = tfa.text.crf_decode(inputs, self.trans, lengths)
