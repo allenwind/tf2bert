@@ -3,7 +3,7 @@ from tensorflow.keras.models import Model
 # 模型构建和权重加载的API定义
 
 class ModelBuilder:
-    """创建模型的流程"""
+    """创建模型的流程，把常用组件的构建添加到该类上"""
 
     num_hidden_layers = 0
 

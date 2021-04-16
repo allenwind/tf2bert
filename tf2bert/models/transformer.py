@@ -83,6 +83,8 @@ class Transformer(ModelBuilder, CheckpointLoader):
             layer.set_weights(values)
 
     def build_layer(self, inputs=None, layer=None, callkwargs=None, **kwargs):
+        """创建一个隐层并连接输入返回输出以及保存元数据,
+        outputs=layer(**kwargs)(inputs, **callkwargs)"""
         if layer is Dropout and self.dropout_rate == 0.0:
             return inputs
 
