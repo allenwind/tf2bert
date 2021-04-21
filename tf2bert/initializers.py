@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.keras import initializers
 
-class SinusoidalInitializer(tf.keras.initializers.Initializer):
+class SinusoidalInitializer(initializers.Initializer):
 
     def __call__(self, shape, dtype=None):
         vocab_size, depth = shape
@@ -11,11 +12,12 @@ class SinusoidalInitializer(tf.keras.initializers.Initializer):
                 theta = pos / np.power(10000, 2.0 * i / depth)
                 embeddings[pos, 2 * i] = np.sin(theta)
                 embeddings[pos, 2 * i + 1] = np.cos(theta)
-        return embeddings
+        return tf.cast(embeddings, dtype)
 
-class SinCosInitializer(tf.keras.initializers.Initializer):
+class AlphaSinCosInitializer(initializers.Initializer):
+    """SinusoidalInitializer的另外一种实现，提供一个alpha缩放因子"""
 
-    def __init__(self, alpha):
+    def __init__(self, alpha=1.0):
         self.alpha = alpha
 
     def __call__(self, shape, dtype=None):
@@ -30,7 +32,7 @@ class SinCosInitializer(tf.keras.initializers.Initializer):
         embeddings = tf.cast(angles[np.newaxis, ...], dtype)
         return embeddings
 
-class TransitionMatrixInitializer(tf.keras.initializers.Initializer):
+class TransitionMatrixInitializer(initializers.Initializer):
     """状态矩阵的初始化"""
 
     def __init__(self, trans):
@@ -42,7 +44,7 @@ class TransitionMatrixInitializer(tf.keras.initializers.Initializer):
     def get_config(self):
         return {"trans": self.trans}
 
-class WordEmbeddingInitializer(tf.keras.initializers.Initializer):
+class WordEmbeddingInitializer(initializers.Initializer):
     """基于训练好的词向量初始化"""
 
     def __init__(self, vocab, path, kind="word2vec"):
@@ -77,7 +79,7 @@ class WordEmbeddingInitializer(tf.keras.initializers.Initializer):
     def shape(self):
         return (self.input_dim, self.output_dim)
 
-class HybridInitializer(tf.keras.initializers.Initializer):
+class HybridInitializer(initializers.Initializer):
     """字词混合初始化，词的向量是其对应字的向量的均值，
     UNK使用所有字向量的均值"""
 
