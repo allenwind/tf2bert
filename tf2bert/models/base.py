@@ -38,11 +38,11 @@ class ModelBuilder:
 
     def build_model(self):
         """构建完整的模型"""
-        inputs = self.build_inputs()
-        x = self.build_embeddings(inputs)
+        self.inputs = self.build_inputs()
+        x = self.build_embeddings(self.inputs)
         x = self.build_all_hidden_layers(x, self.num_hidden_layers)
-        outputs = self.build_outputs(x)
-        self.model = Model(inputs, outputs)
+        self.outputs = self.build_outputs(x)
+        self.model = Model(self.inputs, self.outputs)
         return self.model
 
 class CheckpointLoader:

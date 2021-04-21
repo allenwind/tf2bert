@@ -104,11 +104,13 @@ class Transformer(ModelBuilder, CheckpointLoader):
         return outputs
 
     def compute_attention_mask(self, inputs=None):
-        """获取attention矩阵的mask，如lm mask、unilm mask，用于语言模型。"""
+        """获取attention矩阵的mask，如lm mask、unilm mask，用于语言模型。
+        如果是非语言模型，则该接口返回None。"""
         return self.attention_mask
 
     def compute_position_bias(self, inputs=None):
-        """处理位置编码，不同Transformer模型有"""
+        """处理位置编码，不同Transformer模型有不同位置编码，如果位置编码是直接与
+        TokenEmbedding相加，则该接口返回None。"""
         return self.position_bias
 
     def show_inputs_outputs(self):

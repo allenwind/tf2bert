@@ -4,11 +4,13 @@ from tensorflow.keras.layers import *
 from tf2bert.layers import BiasAdd, PositionEmbedding
 from tf2bert.layers import MultiHeadAttention, LayerNormalization
 from tf2bert.layers import FeedForward, Embedding
+from tf2bert.layers import DenseEmbedding
 from .transformer import Transformer
 
 class BERT(Transformer):
 
-    def __init__(self,
+    def __init__(
+        self,
         max_position,
         with_mlm=False,
         with_pool=False,
@@ -16,6 +18,7 @@ class BERT(Transformer):
         segment_size=2,
         pool_activation="tanh",
         mlm_activation="softmax",
+        pooler_type="first_token_transform",
         unshared_weights=True,
         **kwargs):
         super(BERT, self).__init__(**kwargs)
@@ -27,6 +30,7 @@ class BERT(Transformer):
         self.segment_size = segment_size
         self.pool_activation = pool_activation
         self.mlm_activation = mlm_activation
+        self.pooler_type = pooler_type
         # 是否进行权重共享
         self.unshared_weights = unshared_weights
 
@@ -40,7 +44,7 @@ class BERT(Transformer):
         return inputs
 
     def build_embeddings(self, inputs):
-        """Embedding-Token + Embedding-Position + Embedding-Segment"""
+        """BERT的Embedding = Embedding-Token + Embedding-Position + Embedding-Segment"""
         inputs = inputs[:]
         if self.segment_size > 0:
             x, s = inputs
@@ -103,12 +107,12 @@ class BERT(Transformer):
         """TransformerBlock基本结构，Dropout是BERT抑制过拟合的基本方案
         Attention->Dropout->Add->LN->FNN->Dropout->Add->LN"""
         attention_name = "Transformer-{}-MultiHeadSelfAttention".format(index)
+        callkwargs = {"a_bias": None}
         x = inputs
         xi = x
         # MultiHeadSelfAttention q=k=v
         x = [x, x, x]
 
-        callkwargs = {"a_bias": None}
         attention_mask = self.compute_attention_mask(index)
         if attention_mask is not None:
             callkwargs["a_bias"] = True
