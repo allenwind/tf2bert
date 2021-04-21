@@ -15,7 +15,7 @@ class GPT(LMMaskMixIn, BERT):
 
     def build_embeddings(self, inputs):
         """GPT的Embedding = Embedding-Token + Embedding-Position + Embedding-Segment
-        但三者相加后不接LayerNormalization层。"""
+        但三者叠加后不接LayerNormalization层。"""
         inputs = inputs[:]
         if self.segment_size > 0:
             x, s = inputs

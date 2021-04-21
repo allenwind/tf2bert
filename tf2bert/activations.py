@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-# 默认使用erf的实现
+# gelu默认使用erf的实现
 gelu_approximate = False
 
 def gelu_erf(x):
@@ -28,7 +28,7 @@ def softmax(x, axis=-1):
     x = tf.exp(x)
     return x / tf.reduce_sum(x, axis, keepdims=True)
 
-def softmax_np(x, axis=-1):
+def py_softmax(x, axis=-1):
     """Numpy实现的softmax"""
     x = x - x.max(axis=axis, keepdims=True)
     x = np.exp(x)

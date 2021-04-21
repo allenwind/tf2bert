@@ -10,7 +10,7 @@ class LayerNormalization(tf.keras.layers.Layer):
         self,
         center=True,
         scale=True,
-        epsilon=1e-12,
+        epsilon=1e-12, # 1e-3
         hidden_units=None,
         hidden_activation="linear",
         hidden_initializer="glorot_uniform",
@@ -70,8 +70,6 @@ class LayerNormalization(tf.keras.layers.Layer):
         }
         base_config = super(LayerNormalization, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
-
-
 
 class BatchSequenceNormalization(tf.keras.layers.Layer):
     """在一个batch上序列方向即axis=1计算均值和方差然后再标准化，
@@ -173,9 +171,11 @@ class InstanceNormalization(tf.keras.layers.Layer):
     """InstanceNormalization（GroupNormalization的特例，分组数为特征数）"""
     pass
 
-
-custom_objects = {
-    "LayerNormalization": LayerNormalization,
-}
-
-tf.keras.utils.get_custom_objects().update(custom_objects)
+tf.keras.utils.get_custom_objects().update({
+        "LayerNormalization": LayerNormalization,
+        "BatchNormalization": BatchNormalization,
+        "GroupNormalization": GroupNormalization,
+        "InstanceNormalization": InstanceNormalization,
+        "BatchSequenceNormalization": BatchSequenceNormalization
+    }
+)

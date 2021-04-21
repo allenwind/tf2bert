@@ -107,7 +107,7 @@ class BERT(Transformer):
         """TransformerBlock基本结构，Dropout是BERT抑制过拟合的基本方案
         Attention->Dropout->Add->LN->FNN->Dropout->Add->LN"""
         attention_name = "Transformer-{}-MultiHeadSelfAttention".format(index)
-        callkwargs = {"a_bias": None}
+        callkwargs = {"with_attention_mask": False, "with_position_bias": False}
         x = inputs
         xi = x
         # MultiHeadSelfAttention q=k=v
@@ -115,8 +115,8 @@ class BERT(Transformer):
 
         attention_mask = self.compute_attention_mask(index)
         if attention_mask is not None:
-            callkwargs["a_bias"] = True
             x.append(attention_mask)
+            callkwargs["with_attention_mask"] = True
 
         x = self.build_layer(
             inputs=x,

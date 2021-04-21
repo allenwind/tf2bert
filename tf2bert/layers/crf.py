@@ -2,6 +2,7 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 
 # CRF的简单实现，依赖tensorflow_addons.text中的相关函数
+# tf2bert/tests中有两个本CRF实现的例子
 
 class CRF(tf.keras.layers.Layer):
     """CRF的实现，包括trans矩阵和viterbi解码"""
@@ -43,12 +44,13 @@ class CRF(tf.keras.layers.Layer):
         # 3.Embedding层参数设置mask_zero=True
         assert mask is not None
         lengths = tf.reduce_sum(tf.cast(mask, tf.int32), axis=-1)
+        # CRF的解码，在篱笆网络（Lattice）上的动态规划，即viterbi算法
         viterbi_tags, _ = tfa.text.crf_decode(inputs, self.trans, lengths)
         # (bs, seq_len), (bs, seq_len, units), (bs,), (units, units)
         return viterbi_tags, inputs, lengths, self.trans
 
 class CRFModel(tf.keras.Model):
-    """把CRFloss包装成模型，容易扩展各种loss"""
+    """把CRFloss包装成模型，容易扩展各种loss以及复杂的操作。"""
 
     def __init__(self, base, return_potentials=False, **kwargs):
         super(CRFModel, self).__init__(**kwargs)
@@ -95,6 +97,7 @@ class CRFModel(tf.keras.Model):
 
     def compute_loss(self, x, y, sample_weight, training):
         viterbi_tags, potentials, lengths, trans = self(x, training=training)
+        # 这里计算CRF的损失，包括归一化因子。这里涉及到递归计算。
         crf_loss, _ = tfa.text.crf_log_likelihood(potentials, y, lengths, trans)
         if sample_weight is not None:
             crf_loss = crf_loss * sample_weight

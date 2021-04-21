@@ -1,6 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.layers import *
 
+# CNN相关的扩展层
+
 class MaskedConv1D(tf.keras.layers.Conv1D):
     """不让Conv1D看到mask数据"""
 

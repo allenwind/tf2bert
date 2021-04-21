@@ -24,6 +24,29 @@ class NoisyDense(tf.keras.layers.Layer):
     """在权重矩阵中添加随机噪声，可参看论文
     [Noisy Networks for Explanation](https://arxiv.org/pdf/1706.10295.pdf)"""
 
+class DenseEmbedding(tf.keras.layers.Embedding):
+    """unbias的Dense层，不过kernel使用Embedding矩阵"""
+
+    def call(self, inputs):
+        kernel = tf.transpose(self.embeddings)
+        return tf.matmul(inputs, kernel)
+
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], input_shape[1], self.embeddings.shape[0])
+
+class Dropout(tf.keras.layers.Layer):
+    """tf.nn.dropout的Keras封装"""
+
+    def __init__(self, rate, **kwargs):
+        super(Dropout, self).__init__(**kwargs)
+        self.rate = rate
+
+    @tf.function
+    def call(self, inputs, training=None):
+        if training:
+            return tf.nn.dropout(inputs, rate=self.rate)
+        return inputs
+
 class FeedForward(tf.keras.layers.Layer):
     """Transformer中的position-wise feed-forward networks层，
     在此基础上还有很多的变种，这个根据需要扩展。"""

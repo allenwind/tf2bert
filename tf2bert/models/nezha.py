@@ -73,7 +73,7 @@ class NEZHA(BERT):
         Attention->Dropout->Add->LN->FNN->Dropout->Add->LN
         不过这里需要对Attention传入相对位置编码。"""
         attention_name = "Transformer-{}-MultiHeadSelfAttention".format(index)
-        callkwargs = {"a_bias": None, "p_bias": None}
+        callkwargs = {"with_attention_mask": False, "with_position_bias": False}
         x = inputs
         xi = x
         # MultiHeadSelfAttention q=k=v
@@ -81,13 +81,13 @@ class NEZHA(BERT):
 
         attention_mask = self.compute_attention_mask(index)
         if attention_mask is not None:
-            callkwargs["a_bias"] = True
             x.append(attention_mask)
+            callkwargs["with_attention_mask"] = True
 
         position_bias = self.compute_position_bias(xi)
         if position_bias is not None:
-            callkwargs["p_bias"] = "typical_relative"
             x.append(position_bias)
+            callkwargs["with_position_bias"] = "relative_position"
 
         x = self.build_layer(
             inputs=x,
