@@ -104,3 +104,7 @@ class HybridInitializer(initializers.Initializer):
 
     def _is_word(self, hybrid):
         return len(hybrid) > 1
+
+tf.keras.utils.get_custom_objects().update({
+    "SinusoidalInitializer": SinusoidalInitializer
+})

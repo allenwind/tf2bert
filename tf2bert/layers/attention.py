@@ -4,7 +4,7 @@ from tensorflow.keras import initializers
 from tensorflow.keras import activations
 
 class MultiHeadAttention(tf.keras.layers.Layer):
-    """经典的点积缩放注意力的多头实现，MultiHeadAttention，可参考
+    """经典的点积缩放注意力的多头实现，MultiHeadAttention，基本实现可参考
     https://tensorflow.google.cn/api_docs/python/tf/keras/layers/MultiHeadAttention?hl=en
     参考论文：https://arxiv.org/abs/1706.03762
     """

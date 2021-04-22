@@ -2,7 +2,9 @@ from .embeddings import SimplePositionEmbedding
 from .embeddings import SinusoidalPositionEmbedding
 from .embeddings import PositionEmbedding
 from .embeddings import Embedding
+from .embeddings import CharAlignHybridEmbedding
 from .embeddings import RelativePositionEmbedding
+from .embeddings import EmbeddingProjector
 from .pooling import MaskedGlobalMaxPooling1D
 from .pooling import MaskedGlobalAveragePooling1D
 from .pooling import AttentionPooling1D
