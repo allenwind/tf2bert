@@ -265,8 +265,14 @@ class Tokenizer:
     def encode_sequences(self, texts, maxlen=None, mode="SEE"):
         pass
 
-    def batch_encode(self, texts):
-        return [self.encode(text) for text in texts]
+    def batch_encode(self, texts, maxlen=None):
+        batch_token_ids = []
+        batch_segment_ids = []
+        for text in texts:
+            token_ids, segment_ids = self.encode(text, maxlen=maxlen)
+            batch_token_ids.append(token_ids)
+            batch_segment_ids.append(segment_ids)
+        return batch_token_ids, batch_segment_ids
 
     def decode(self, ids, tokens=None):
         """id序列转为可读文本"""
@@ -323,6 +329,9 @@ class Tokenizer:
 
     def stemize(self, sub):
         return "##" + sub
+
+    def __len__(self):
+        return self._vocab_size
 
     @property
     def vocab_size(self):
