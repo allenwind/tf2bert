@@ -143,7 +143,8 @@ class SinusoidalPositionEmbedding(tf.keras.layers.Layer):
 
 class PositionEmbedding(tf.keras.layers.Layer):
     """经典的可训练位置Embedding，作为SinusoidalPositionEmbedding
-    的替代。"""
+    的替代。FaceBook论文Convolutional Sequence to Sequence Learning
+    也提及到该Position Embedding。"""
 
     def __init__(
         self,
@@ -158,7 +159,8 @@ class PositionEmbedding(tf.keras.layers.Layer):
         assert merge_mode in ("add", "concat", "mul", "zero")
         self.merge_mode = merge_mode
         self.embeddings_initializer = initializers.get(embeddings_initializer)
-        # self.supports_masking = True
+        # 支持mask往下传递
+        self.supports_masking = True
 
     def build(self, input_shape):
         self.embeddings = self.add_weight(
@@ -314,5 +316,7 @@ class EmbeddingProjector(tf.keras.layers.Layer):
         return x
 
 tf.keras.utils.get_custom_objects().update({
+    "Embedding": Embedding,
+    "PositionEmbedding": PositionEmbedding,
     "SinusoidalPositionEmbedding": SinusoidalPositionEmbedding
 })
