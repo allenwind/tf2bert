@@ -265,11 +265,14 @@ class Tokenizer:
     def encode_sequences(self, texts, maxlen=None, mode="SEE"):
         pass
 
-    def batch_encode(self, texts, maxlen=None):
+    def batch_encode(self, texts1, texts2=None, maxlen=None, mode="SEE"):
+        """encode的batch操作"""
+        if texts2 is None:
+            texts2 = [None] * len(texts1)
         batch_token_ids = []
         batch_segment_ids = []
-        for text in texts:
-            token_ids, segment_ids = self.encode(text, maxlen=maxlen)
+        for text1, text2 in zip(texts1, texts2):
+            token_ids, segment_ids = self.encode(text1, text2, maxlen, mode)
             batch_token_ids.append(token_ids)
             batch_segment_ids.append(segment_ids)
         return batch_token_ids, batch_segment_ids

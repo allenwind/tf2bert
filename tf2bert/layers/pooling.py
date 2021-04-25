@@ -12,7 +12,7 @@ class MaskedGlobalMaxPooling1D(Layer):
 
     def call(self, inputs, mask=None):
         if mask is None:
-            mask = 1
+            mask = 1.0
         else:
             # 扩展维度便于广播
             mask = tf.expand_dims(tf.cast(mask, tf.float32), -1)
