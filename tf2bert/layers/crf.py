@@ -3,14 +3,17 @@ import tensorflow_addons as tfa
 
 # CRF的简单实现，依赖tensorflow_addons.text中的相关函数
 # tf2bert/tests中有两个本CRF实现的例子
+# TODO: 去掉对tensorflow_addons的依赖
 
 class CRF(tf.keras.layers.Layer):
     """CRF的实现，包括trans矩阵和viterbi解码"""
 
-    def __init__(self, lr_multiplier=1, trans_initializer="glorot_uniform", trainable=True, **kwargs):
+    def __init__(self, lr_multiplier=1, trans_mask=None, trans_initializer="glorot_uniform", trainable=True, **kwargs):
         super(CRF, self).__init__(**kwargs)
         # 设置分层学习率
         self.lr_multiplier = lr_multiplier
+        # trans特征转移矩阵的mask
+        self.trans_mask = trans_mask
         if isinstance(trans_initializer, str):
             trans_initializer = tf.keras.initializers.get(trans_initializer)
         self.trans_initializer = trans_initializer
@@ -32,6 +35,7 @@ class CRF(tf.keras.layers.Layer):
 
     @property
     def trans(self):
+        """转移特征，非转移概率"""
         if self.lr_multiplier != 1:
             return self.lr_multiplier * self._trans
         return self._trans

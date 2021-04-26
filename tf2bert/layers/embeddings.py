@@ -154,6 +154,7 @@ class PositionEmbedding(tf.keras.layers.Layer):
         embeddings_initializer="zeros",
         **kwargs):
         super(PositionEmbedding, self).__init__(**kwargs)
+        # 支持的最大长度
         self.input_dim = input_dim
         self.output_dim = output_dim
         assert merge_mode in ("add", "concat", "mul", "zero")

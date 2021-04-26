@@ -4,7 +4,9 @@ import tensorflow as tf
 
 class LMMaskMixIn:
     """计算下三角Mask，用于语言模型。这里使用MixIn的写法，
-    通过继承即可扩展Transformer的mask，但单独使用没有意义。"""
+    通过继承即可扩展Transformer的mask，但单独使用没有意义。
+    MaskedAttention也使用此mask。
+    """
 
     def compute_attention_mask(self, inputs=None):
         if self.attention_mask is None:
@@ -25,7 +27,8 @@ class LMMaskMixIn:
         return self.attention_mask
 
 class UniLMMaskMixIn:
-    """计算Segment的下三角Mask, 用于Seq2Seq任务。
+    """计算Segment的下三角Mask, 用于Seq2Seq任务。对于输入部分，
+    做双向Attention，而对于输出，做单向Attention。
     可参考论文：https://arxiv.org/abs/1905.03197"""
 
     def compute_attention_mask(self, inputs=None):

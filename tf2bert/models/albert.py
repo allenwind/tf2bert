@@ -42,7 +42,9 @@ class ALBERT(BERT):
             name="{}-Dropout".format(attention_name)
         )
         x = self.build_layer(
-            inputs=[xi, x], layer=Add, name="{}-Add".format(attention_name)
+            inputs=[xi, x],
+            layer=Add,
+            name="{}-Add".format(attention_name)
         )
         x = self.build_layer(
             inputs=x,
@@ -69,7 +71,9 @@ class ALBERT(BERT):
             name="{}-Dropout".format(feed_forward_name)
         )
         x = self.build_layer(
-            inputs=[xi, x], layer=Add, name="{}-Add".format(feed_forward_name)
+            inputs=[xi, x],
+            layer=Add,
+            name="{}-Add".format(feed_forward_name)
         )
         x = self.build_layer(
             inputs=x,

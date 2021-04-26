@@ -34,19 +34,6 @@ class DenseEmbedding(tf.keras.layers.Embedding):
     def compute_output_shape(self, input_shape):
         return (input_shape[0], input_shape[1], self.embeddings.shape[0])
 
-class Dropout(tf.keras.layers.Layer):
-    """tf.nn.dropout的Keras封装"""
-
-    def __init__(self, rate, **kwargs):
-        super(Dropout, self).__init__(**kwargs)
-        self.rate = rate
-
-    @tf.function
-    def call(self, inputs, training=None):
-        if training:
-            return tf.nn.dropout(inputs, rate=self.rate)
-        return inputs
-
 class FeedForward(tf.keras.layers.Layer):
     """Transformer中的position-wise feed-forward networks层，
     在此基础上还有很多的变种，这个根据需要扩展。"""
@@ -94,3 +81,6 @@ class FeedForward(tf.keras.layers.Layer):
             "kernel_initializer": initializers.serialize(self.kernel_initializer)
         }
         return dict(list(base.items()) + list(configs.items()))
+
+class GLU(tf.keras.layers.Layer):
+    """Gated Linear Unit，门线性单元"""

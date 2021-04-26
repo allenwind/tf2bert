@@ -41,7 +41,9 @@ class GPT(LMMaskMixIn, BERT):
                 name="Embedding-Segment"
             )
             x = self.build_layer(
-                inputs=[x, s], layer=Add, name="Embedding-Token-Segment"
+                inputs=[x, s],
+                layer=Add,
+                name="Embedding-Token-Segment"
             )
         x = self.build_layer(
             layer=PositionEmbedding,

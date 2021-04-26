@@ -2,7 +2,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import *
 
 from tf2bert.layers import BiasAdd, PositionEmbedding
-from tf2bert.layers import MultiHeadAttention, LayerNormalization
+from tf2bert.layers import MultiHeadAttention
+from tf2bert.layers import LayerNormalization
 from tf2bert.layers import FeedForward, Embedding
 from tf2bert.layers import DenseEmbedding
 from .transformer import Transformer
@@ -30,6 +31,7 @@ class BERT(Transformer):
         self.segment_size = segment_size
         self.pool_activation = pool_activation
         self.mlm_activation = mlm_activation
+        # 指定pooler的类型，默认使用[CLS]
         self.pooler_type = pooler_type
         # 是否进行权重共享
         self.unshared_weights = unshared_weights
@@ -136,7 +138,9 @@ class BERT(Transformer):
             name="{}-Dropout".format(attention_name)
         )
         x = self.build_layer(
-            inputs=[xi, x], layer=Add, name="{}-Add".format(attention_name)
+            inputs=[xi, x],
+            layer=Add,
+            name="{}-Add".format(attention_name)
         )
         x = self.build_layer(
             inputs=x,
@@ -163,7 +167,9 @@ class BERT(Transformer):
             name="{}-Dropout".format(feed_forward_name)
         )
         x = self.build_layer(
-            inputs=[xi, x], layer=Add, name="{}-Add".format(feed_forward_name)
+            inputs=[xi, x],
+            layer=Add,
+            name="{}-Add".format(feed_forward_name)
         )
         x = self.build_layer(
             inputs=x,

@@ -171,6 +171,20 @@ class InstanceNormalization(tf.keras.layers.Layer):
     """InstanceNormalization（GroupNormalization的特例，分组数为特征数）"""
     pass
 
+class MinMaxScaling1D(tf.keras.layers.Layer):
+    
+    def __init__(self, params, **kwargs):
+        super(MinMaxScaling1D, self).__init__(**kwargs)
+        self.params = params
+
+    def build(self, input_shape):
+        tf.constant(self.params, shape=(1, 1, len(self.params)))
+
+    def call(self, inputs, mask=None):
+        pass
+
+
+
 tf.keras.utils.get_custom_objects().update({
         "LayerNormalization": LayerNormalization,
         "BatchNormalization": BatchNormalization,

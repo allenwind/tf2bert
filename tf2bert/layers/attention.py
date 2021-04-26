@@ -4,7 +4,8 @@ from tensorflow.keras import initializers
 from tensorflow.keras import activations
 
 class MultiHeadAttention(tf.keras.layers.Layer):
-    """经典的点积缩放注意力的多头实现，MultiHeadAttention，基本实现可参考
+    """经典的点积缩放注意力（scaled dot product Attention）的多头实现，
+    MultiHeadAttention，基本实现可参考Tensorflow的官方实现，见文档：
     https://tensorflow.google.cn/api_docs/python/tf/keras/layers/MultiHeadAttention?hl=en
     参考论文：https://arxiv.org/abs/1706.03762
     """
@@ -106,17 +107,20 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         mask = [q_mask, v_mask]
         attn, scores = self._compute_attention(qkvw, bias, mask, **kwargs)
         attn = tf.reshape(attn, (-1, tf.shape(attn)[1], self.num_heads * self.head_size))
+        # (batch_size, seq_len, out_dim)
         attn = self.ow_dense(attn)
         if self.return_attention_scores:
             return attn, scores
         return attn
 
     def _compute_attention(self, qkvw, bias, mask, **kwargs):
+        """softmax(Q*K.T)*V"""
         qw, kw, vw = qkvw
         q_mask, v_mask = mask
 
         # dot product Attention
         # 参考论文：https://arxiv.org/abs/1706.03762
+        # Q*K.T
         a = tf.einsum("bjhd,bkhd->bhjk", qw, kw)
 
         # 处理Attention mask和位置编码
@@ -131,7 +135,8 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
         # scaled dot product Attention
         # 可参考论文：https://arxiv.org/abs/2002.07028
-        # 最直观的理解，softmax存在饱和区，通过缩放避免落入饱和区
+        # 最直观的理解，softmax存在饱和区，容易发生梯度消失，
+        # 通过缩放避免落入饱和区
         if self.use_attention_scale:
             a = a / tf.sqrt(float(self.key_size))
 
@@ -143,6 +148,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
         # 计算padding的mask，消除对softmax的影响
         a = self._compute_sequence_mask(a, v_mask, -1e12, -1)
+        # 归一化，目前最常见的是softmax，一些优化可以在此展开
         A = tf.math.softmax(a, axis=-1)
         if self.dropout != 0:
             A = Dropou(self.dropout)(A)
@@ -168,7 +174,6 @@ class MultiHeadAttention(tf.keras.layers.Layer):
             return mask[0]
 
     def _compute_sequence_mask(self, x, mask, value, axis):
-        # tf.print(tf.shape(mask))
         K = tf.keras.backend
         if mask is None:
             return x

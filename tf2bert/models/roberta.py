@@ -7,4 +7,5 @@ class RoBERTa(BERT):
     - 移除NSP任务
     - 使用动态的mask
     - 支持更长的序列
+    - 使用Byte Pair Encoding
     """

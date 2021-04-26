@@ -23,3 +23,17 @@ class RandomChange(tf.keras.layers.Layer):
             )
             return inputs * (1 - mask) + tokens * mask
         return inputs
+
+class Dropout(tf.keras.layers.Layer):
+    """tf.nn.dropout的Keras封装"""
+
+    def __init__(self, rate, noise_shape, **kwargs):
+        super(Dropout, self).__init__(**kwargs)
+        self.rate = rate
+        self.noise_shape = noise_shape
+
+    @tf.function
+    def call(self, inputs, training=None):
+        if training:
+            return tf.nn.dropout(inputs, rate=self.rate)
+        return inputs

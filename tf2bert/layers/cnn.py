@@ -28,6 +28,7 @@ class ResidualGatedConv1D(tf.keras.layers.Layer):
         super(ResidualGatedConv1D, self).__init__(**kwargs)
         self.filters = filters
         self.kernel_size = kernel_size
+        # 通过膨胀卷积捕获更长的距离
         self.dilation_rate = dilation_rate
         self.supports_masking = True
 
@@ -42,7 +43,8 @@ class ResidualGatedConv1D(tf.keras.layers.Layer):
             filters=self.filters * 2,
             kernel_size=self.kernel_size,
             dilation_rate=self.dilation_rate,
-            padding="same",
+            use_bias=True,
+            padding="same"
         )
         self.layernorm = LayerNormalization()
         if self.filters != input_shape[-1]:
@@ -60,12 +62,14 @@ class ResidualGatedConv1D(tf.keras.layers.Layer):
         x = self.conv1d(inputs)
         # tf.split
         o1 = x[:, :, self.filters:]
-        o2 = x[:, :, :self.filters] 
+        o2 = x[:, :, :self.filters]
+        # Gated Linear Unit
         x = o1 * tf.sigmoid(o2)
         x = self.layernorm(x)
 
         if hasattr(self, "o_dense"):
             inputs = self.o_dense(inputs)
+        # 残差机制
         return inputs + self.alpha * x
 
     def compute_output_shape(self, input_shape):

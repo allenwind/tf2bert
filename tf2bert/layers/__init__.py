@@ -18,7 +18,10 @@ from .merge import ReversedConcatenate1D
 from .merge import LayersConcatenate
 from .merge import MaskedConcatenate1D
 from .merge import MaskedFlatten
-from .dense import FeedForward, BiasAdd
+from .dense import FeedForward
+from .dense import NoisyDense
+from .dense import BiasAdd
 from .dense import DenseEmbedding
 from .cnn import MaskedConv1D
 from .cnn import ResidualGatedConv1D
+from .regularization import RandomChange
