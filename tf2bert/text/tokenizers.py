@@ -77,7 +77,8 @@ def load_vocab(dict_path, encoding="utf-8"):
     return token_dict
 
 class Tokenizer:
-    """Transformer的Tokenizer，兼容各类Transformer模型"""
+    """Transformer的Tokenizer，兼容各类Transformer模型。
+    可参看：https://github.com/google-research/bert.git"""
 
     def __init__(
         self,
@@ -262,9 +263,6 @@ class Tokenizer:
             segment_ids.extend(segment_ids2)
         return token_ids, segment_ids
 
-    def encode_sequences(self, texts, maxlen=None, mode="SEE"):
-        pass
-
     def batch_encode(self, texts1, texts2=None, maxlen=None, mode="SEE"):
         """encode的batch操作"""
         if texts2 is None:
@@ -284,7 +282,6 @@ class Tokenizer:
 
         text = ""
         for i, token in enumerate(tokens):
-            # if token[:2] == "##":
             if self._is_stem(token):
                 text += token[2:]
             elif len(token) == 1 and self._is_cjk_character(token):
