@@ -6,6 +6,7 @@ class ModelBuilder:
     """创建模型的流程，把常用组件的构建添加到该类上"""
 
     num_hidden_layers = 0
+    model_name = ""
 
     def build_inputs(self):
         """返回list形式"""
@@ -42,7 +43,7 @@ class ModelBuilder:
         x = self.build_embeddings(self.inputs)
         x = self.build_all_hidden_layers(x, self.num_hidden_layers)
         self.outputs = self.build_outputs(x)
-        self.model = Model(self.inputs, self.outputs)
+        self.model = Model(self.inputs, self.outputs, name=self.model_name)
         return self.model
 
 class CheckpointLoader:

@@ -6,6 +6,27 @@ from tensorflow.keras.models import Model
 from .base import ModelBuilder
 from .base import CheckpointLoader
 
+class Configs:
+    """Transformer参数"""
+
+    attention_probs_dropout_prob = 0.1 # softmax后dropout概率
+    directionality = "bidi"
+    hidden_act = "gelu" # 隐层激活函数，主要用于FNN
+    hidden_dropout_prob = 0.1 # 隐层模块间的dropout，主要是Attention输出的dropout
+    hidden_size = 768
+    initializer_range = 0.02
+    intermediate_size = 3072
+    max_position_embeddings = 512
+    num_attention_heads = 12
+    num_hidden_layers = 12
+    pooler_fc_size = 768
+    pooler_num_attention_heads = 12
+    pooler_num_fc_layers = 3
+    pooler_size_per_head = 128
+    pooler_type = "first_token_transform"
+    type_vocab_size = 2 # 段数量
+    vocab_size = 21128
+
 class Transformer(ModelBuilder, CheckpointLoader):
     """Transformer基类，包括Transformer常用的参数和构建流程"""
 
@@ -19,6 +40,7 @@ class Transformer(ModelBuilder, CheckpointLoader):
         hidden_act,
         embedding_size=None,
         dropout_rate=0,
+        attention_dropout_rate=0,
         initializer_range=0.02,
         attention_key_size=None,
         attention_head_size=None,
@@ -37,6 +59,7 @@ class Transformer(ModelBuilder, CheckpointLoader):
         self.intermediate_size = intermediate_size # FFN的隐层维度
         self.hidden_act = hidden_act # FFN隐层的激活函数
         self.dropout_rate = dropout_rate
+        self.attention_dropout_rate = attention_dropout_rate
         self.initializer_range = initializer_range
         self.embedding_size = embedding_size or hidden_size
         self.sequence_length = sequence_length
@@ -68,6 +91,7 @@ class Transformer(ModelBuilder, CheckpointLoader):
         self.layers = {}
         self.model = None
         # 全局初始化器，构建层时的参数初始化器
+        # initializer_range = 0.02
         self.initializer = initializers.TruncatedNormal(stddev=0.02)
 
     def load_checkpoint(self, checkpoint):

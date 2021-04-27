@@ -13,7 +13,8 @@ from .mask import install_attention_mask
 from .base import ModelBuilder, CheckpointLoader
 from .training import AdversarialTraining, GradientPenalty
 
-# transformer_model + app
+# transformer_model + mask
+# 如：bert+lm
 models = {
     "bert": BERT,
     "roberta": RoBERTa,
@@ -36,6 +37,8 @@ def load_transformer_configs(config_path, **kwargs):
         configs["config_path"] = config_path
     if "dropout_rate" not in configs:
         configs["dropout_rate"] = configs.get("hidden_dropout_prob")
+    if "attention_dropout_rate" not in configs:
+        configs["attention_dropout_rate"] = configs.get("attention_probs_dropout_prob")
     if "segment_size" not in configs:
         configs["segment_size"] = configs.get("type_vocab_size", 2)
     if "max_position" not in configs:

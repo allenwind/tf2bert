@@ -72,7 +72,9 @@ class BERT(Transformer):
                 name="Embedding-Segment"
             )
             x = self.build_layer(
-                inputs=[x, s], layer=Add, name="Embedding-Token-Segment"
+                inputs=[x, s],
+                layer=Add,
+                name="Embedding-Token-Segment"
             )
         x = self.build_layer(
             inputs=x,
@@ -128,6 +130,7 @@ class BERT(Transformer):
             head_size=self.attention_head_size,
             out_dim=self.hidden_size,
             key_size=self.attention_key_size,
+            attention_dropout_rate=self.attention_dropout_rate,
             kernel_initializer=self.initializer,
             name=attention_name
         )
