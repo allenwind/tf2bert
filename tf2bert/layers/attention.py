@@ -16,8 +16,8 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         head_size,
         key_size=None,
         out_dim=None,
-        dropout=0.0,
         use_bias=True,
+        attention_dropout_rate=0.0,
         use_attention_scale=True,
         use_residual_attention=False,
         return_attention_scores=False,
@@ -36,7 +36,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
             key_size = head_size
         self.key_size = key_size
         # Attention中softmax后的dropout
-        self.dropout = dropout
+        self.attention_dropout_rate = attention_dropout_rate
         self.use_bias = use_bias
         # 是否对注意力进行缩放
         self.use_attention_scale = use_attention_scale
@@ -86,14 +86,11 @@ class MultiHeadAttention(tf.keras.layers.Layer):
     def call(self, inputs, mask=None, **kwargs):
         # bias是Attention矩阵的偏置项，与位置编码和mask相关
         q, k, v, *bias = inputs
-        if mask is not None:
-            # 对输入的query序列的mask，以便输出的padding部分置0
-            q_mask = mask[0]
-            # 对输入的value序列的mask，防止attention读取padding部分
-            v_mask = mask[2]
-        else:
-            q_mask = None
-            v_mask = None
+        if mask is None:
+            mask = [None] * 3
+        # q_mask对输入的query序列的mask，以便输出的padding部分置0
+        # v_mask对输入的value序列的mask，防止attention读取padding部分
+        q_mask, k_mask, v_mask = mask
 
         qw = self.qw_dense(q)
         kw = self.kw_dense(k)
@@ -147,11 +144,11 @@ class MultiHeadAttention(tf.keras.layers.Layer):
             a = a + attention_mask
 
         # 计算padding的mask，消除对softmax的影响
-        a = self._compute_sequence_mask(a, v_mask, -1e12, -1)
+        a = self._compute_sequence_mask(a, v_mask, -1e12)
         # 归一化，目前最常见的是softmax，一些优化可以在此展开
         A = tf.math.softmax(a, axis=-1)
-        if self.dropout != 0:
-            A = Dropou(self.dropout)(A)
+        if self.attention_dropout_rate != 0:
+            A = Dropout(self.attention_dropout_rate)(A)
         # 加权平均
         attn = tf.einsum("bhjk,bkhd->bjhd", A, vw)
 
@@ -173,22 +170,13 @@ class MultiHeadAttention(tf.keras.layers.Layer):
                 return [mask[0], None]
             return mask[0]
 
-    def _compute_sequence_mask(self, x, mask, value, axis):
-        K = tf.keras.backend
+    def _compute_sequence_mask(self, x, mask, value):
         if mask is None:
             return x
 
         mask = tf.cast(mask, x.dtype)
-
-        if axis is None:
-            axis = 1
-        elif axis < 0:
-            axis = K.ndim(x) + axis
-
-        for _ in range(axis - 1):
-            mask = tf.expand_dims(mask, 1)
-        for _ in range(K.ndim(x) - K.ndim(mask)):
-            mask = tf.expand_dims(mask, K.ndim(mask))
+        mask = tf.expand_dims(mask, axis=1)
+        mask = tf.expand_dims(mask, axis=1)
         return x * mask + value * (1 - mask)
 
     def compute_output_shape(self, input_shape):
@@ -206,8 +194,8 @@ class MultiHeadAttention(tf.keras.layers.Layer):
             "head_size": self.head_size,
             "key_size": self.key_size,
             "out_dim": self.out_dim,
-            "dropout": self.dropout,
             "use_bias": self.use_bias,
+            "attention_dropout_rate": self.attention_dropout_rate,
             "use_attention_scale": self.use_attention_scale,
             "use_residual_attention": self.use_residual_attention,
             "return_attention_scores": self.return_attention_scores,
