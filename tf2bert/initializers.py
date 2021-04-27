@@ -3,11 +3,12 @@ import tensorflow as tf
 from tensorflow.keras import initializers
 
 class SinusoidalInitializer(initializers.Initializer):
+    """Sinusoidal初始化器"""
 
     def __call__(self, shape, dtype=None):
-        vocab_size, depth = shape
+        position_size, depth = shape
         embeddings = np.zeros(shape)
-        for pos in range(vocab_size):
+        for pos in range(position_size):
             for i in range(depth // 2):
                 theta = pos / np.power(10000, 2.0 * i / depth)
                 embeddings[pos, 2 * i] = np.sin(theta)
@@ -22,18 +23,18 @@ class AlphaSinCosInitializer(initializers.Initializer):
 
     def __call__(self, shape, dtype=None):
         # 使用 numpy 初始化位置向量矩阵
-        # embeddings.shape = (1, input_dim, output_dim)
-        _, input_dim, output_dim = shape
+        # embeddings.shape = (input_dim, output_dim)
+        input_dim, output_dim = shape
         pos = np.arange(input_dim)[:, np.newaxis]
         i = np.arange(output_dim)[np.newaxis, :]
         angles = pos / np.power(10000, 2 * i * self.alpha / output_dim)
         angles[:, 0::2] = np.sin(angles[:, 0::2])
         angles[:, 1::2] = np.cos(angles[:, 1::2])
-        embeddings = tf.cast(angles[np.newaxis, ...], dtype)
+        embeddings = tf.cast(angles, dtype)
         return embeddings
 
 class TransitionMatrixInitializer(initializers.Initializer):
-    """状态矩阵的初始化"""
+    """状态转移特征（非状态转移概率）矩阵的初始化"""
 
     def __init__(self, trans):
         self.trans = trans
