@@ -1,3 +1,4 @@
+import tensorflow as tf
 from .embeddings import SimplePositionEmbedding
 from .embeddings import SinusoidalPositionEmbedding
 from .embeddings import PositionEmbedding
@@ -25,3 +26,10 @@ from .dense import DenseEmbedding
 from .cnn import MaskedConv1D
 from .cnn import ResidualGatedConv1D
 from .regularization import RandomChange
+
+tf.keras.utils.get_custom_objects().update({
+    "Embedding": Embedding,
+    "PositionEmbedding": PositionEmbedding,
+    "SinusoidalPositionEmbedding": SinusoidalPositionEmbedding,
+    "LayerNormalization": LayerNormalization
+})

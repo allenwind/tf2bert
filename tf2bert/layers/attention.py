@@ -102,6 +102,9 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
         qkvw = [qw, kw, vw]
         mask = [q_mask, v_mask]
+
+        # 把mask移动到这里处理
+
         attn, scores = self._compute_attention(qkvw, bias, mask, **kwargs)
         attn = tf.reshape(attn, (-1, tf.shape(attn)[1], self.num_heads * self.head_size))
         # (batch_size, seq_len, out_dim)
@@ -131,9 +134,8 @@ class MultiHeadAttention(tf.keras.layers.Layer):
             a = a + tf.einsum("bjhd,jkd->bhjk", qw, position_bias)
 
         # scaled dot product Attention
+        # 最直观的理解，softmax存在饱和区，容易发生梯度消失，通过缩放避免落入饱和区
         # 可参考论文：https://arxiv.org/abs/2002.07028
-        # 最直观的理解，softmax存在饱和区，容易发生梯度消失，
-        # 通过缩放避免落入饱和区
         if self.use_attention_scale:
             a = a / tf.sqrt(float(self.key_size))
 
@@ -212,3 +214,6 @@ class Attention(MultiHeadAttention):
     def __init__(self, out_dim, **kwargs):
         super(Attention, self).__init__(1, out_dim, **kwargs)
         self.out_dim = out_dim
+
+class TransformerBlock(tf.keras.layers.Layer):
+    pass

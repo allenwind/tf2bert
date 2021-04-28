@@ -35,7 +35,9 @@ class CRF(tf.keras.layers.Layer):
 
     @property
     def trans(self):
-        """转移特征，非转移概率"""
+        """trans并不显式定义转移概率，而是转移特征，
+        因此数值并不能反映概率大小。但是，相对大小还是
+        具有意义的。"""
         if self.lr_multiplier != 1:
             return self.lr_multiplier * self._trans
         return self._trans
@@ -52,6 +54,9 @@ class CRF(tf.keras.layers.Layer):
         viterbi_tags, _ = tfa.text.crf_decode(inputs, self.trans, lengths)
         # (bs, seq_len), (bs, seq_len, units), (bs,), (units, units)
         return viterbi_tags, inputs, lengths, self.trans
+
+    def compute_mask(self, inputs, mask=None):
+        return None
 
 class CRFModel(tf.keras.Model):
     """把CRFloss包装成模型，容易扩展各种loss以及复杂的操作。"""

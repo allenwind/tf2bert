@@ -12,8 +12,7 @@ class Embedding(tf.keras.layers.Embedding):
     def call(self, inputs, mode="embedding"):
         assert mode in ("embedding", "dot")
         if mode == "dot":
-            kernel = tf.transpose(self.embeddings)
-            return tf.matmul(inputs, kernel)
+            return tf.matmul(inputs, self.embeddings, transpose_b=True)
         return super(Embedding, self).call(inputs)
 
     def compute_output_shape(self, input_shape):
@@ -315,9 +314,3 @@ class EmbeddingProjector(tf.keras.layers.Layer):
         if self.project_embeddings_with_bias:
             x = x + self.projector_bias
         return x
-
-tf.keras.utils.get_custom_objects().update({
-    "Embedding": Embedding,
-    "PositionEmbedding": PositionEmbedding,
-    "SinusoidalPositionEmbedding": SinusoidalPositionEmbedding
-})

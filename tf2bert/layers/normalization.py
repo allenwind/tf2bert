@@ -182,14 +182,3 @@ class MinMaxScaling1D(tf.keras.layers.Layer):
 
     def call(self, inputs, mask=None):
         pass
-
-
-
-tf.keras.utils.get_custom_objects().update({
-        "LayerNormalization": LayerNormalization,
-        "BatchNormalization": BatchNormalization,
-        "GroupNormalization": GroupNormalization,
-        "InstanceNormalization": InstanceNormalization,
-        "BatchSequenceNormalization": BatchSequenceNormalization
-    }
-)

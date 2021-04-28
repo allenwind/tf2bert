@@ -35,5 +35,5 @@ class Dropout(tf.keras.layers.Layer):
     @tf.function
     def call(self, inputs, training=None):
         if training:
-            return tf.nn.dropout(inputs, rate=self.rate)
+            return tf.nn.dropout(inputs, rate=1 - self.rate)
         return inputs
