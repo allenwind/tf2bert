@@ -22,6 +22,9 @@ def mish(x):
     """
     return x * tf.math.tanh(tf.math.softplus(x))
 
+def swish(x):
+    return tf.nn.swish(x)
+
 def softmax(x, axis=-1):
     """Tensorflow实现的softmax"""
     x = x - tf.reduce_max(x, axis, keepdims=True)
@@ -34,9 +37,9 @@ def py_softmax(x, axis=-1):
     x = np.exp(x)
     return x / x.sum(axis=axis, keepdims=True)
 
-
 tf.keras.utils.get_custom_objects()["gelu"] = gelu
 tf.keras.utils.get_custom_objects()["gelu_erf"] = gelu_erf
 tf.keras.utils.get_custom_objects()["gelu_tanh"] = gelu_tanh
 tf.keras.utils.get_custom_objects()["leaky_relu"] = leaky_relu
 tf.keras.utils.get_custom_objects()["mish"] = mish
+tf.keras.utils.get_custom_objects()["swish"] = swish
