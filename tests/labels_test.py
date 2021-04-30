@@ -31,12 +31,14 @@ for text, label in zip(texts, labels):
     print(a_entities)
     print(b_entities)
 
+# BIO BIOES转换
 iobes_labels = batch_bio2iobes(labels)
 bio_labels = batch_iobes2bio(iobes_labels)
 
 for label1, label2 in zip(bio_labels, labels):
     assert label1 == label2
 
+# 测试tagger
 tagger = TaggingTokenizer()
 tagger.fit(labels)
 

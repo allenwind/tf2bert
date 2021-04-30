@@ -22,23 +22,24 @@ model = build_transformer(
 
 rate = 0.3
 
-for sentence in load_cws_sentences():
-    token_ids, segment_ids = tokenizer.encode(sentence)
-    ws = np.zeros((len(sentence),))
+for _ in range(10):
+    for sentence in load_cws_sentences():
+        token_ids, segment_ids = tokenizer.encode(sentence)
+        ws = np.zeros((len(sentence),))
 
-    mask_nums = int(rate * len(sentence))
-    masks = random.sample(range(1, len(sentence)), mask_nums)
-    for mask in masks:
-        ws[mask] = 1
-        token_ids[mask] = tokenizer._token_mask_id
+        mask_nums = int(rate * len(sentence))
+        masks = random.sample(range(2, len(sentence)), mask_nums)
+        for mask in masks:
+            ws[mask] = 1
+            token_ids[mask] = tokenizer._token_mask_id
 
-    token_ids = np.array([token_ids])
-    segment_ids = np.array([segment_ids])
-    probs = model.predict([token_ids, segment_ids])[0]
-    # 红色部分为预测部分
-    print_color_text(sentence, ws)
-    print_color_text(tokenizer.decode(probs[1:-1].argmax(axis=1)), ws)
-    print()
+        token_ids = np.array([token_ids])
+        segment_ids = np.array([segment_ids])
+        probs = model.predict([token_ids, segment_ids])[0]
+        # 红色部分为预测部分
+        print_color_text(sentence, ws)
+        print_color_text(tokenizer.decode(probs[1:-1].argmax(axis=1)), ws)
+        print()
 
 """
 黑天鹅和灰犀牛是两个突发性事件
