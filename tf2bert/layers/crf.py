@@ -56,7 +56,7 @@ class CRF(tf.keras.layers.Layer):
         return viterbi_tags, inputs, lengths, self.trans
 
     def compute_mask(self, inputs, mask=None):
-        return None
+        return mask
 
 class CRFModel(tf.keras.Model):
     """把CRFloss包装成模型，容易扩展各种loss以及复杂的操作。"""

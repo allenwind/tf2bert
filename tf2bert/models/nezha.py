@@ -1,8 +1,10 @@
 import tensorflow as tf
 from tensorflow.keras.layers import *
 
+from tf2bert.initializers import SinusoidalInitializer
 from tf2bert.layers import RelativePositionEmbedding
-from tf2bert.layers import MultiHeadAttention, LayerNormalization
+from tf2bert.layers import MultiHeadAttention
+from tf2bert.layers import LayerNormalization
 from tf2bert.layers import FeedForward, Embedding
 from .bert import BERT
 
@@ -19,7 +21,6 @@ class NEZHA(BERT):
 
     def build_embeddings(self, inputs):
         """NEZHA的Embedding = Embedding-Token + Embedding-Segment"""
-        inputs = inputs[:]
         if self.segment_size > 0:
             x, s = inputs
         else:
@@ -44,7 +45,9 @@ class NEZHA(BERT):
                 name="Embedding-Segment"
             )
             x = self.build_layer(
-                inputs=[x, s], layer=Add, name="Embedding-Token-Segment"
+                inputs=[x, s],
+                layer=Add,
+                name="Embedding-Token-Segment"
             )
         x = self.build_layer(
             inputs=x,
@@ -93,7 +96,7 @@ class NEZHA(BERT):
             inputs=x,
             layer=MultiHeadAttention,
             callkwargs=callkwargs,
-            heads=self.num_attention_heads,
+            num_heads=self.num_attention_heads,
             head_size=self.attention_head_size,
             out_dim=self.hidden_size,
             key_size=self.attention_key_size,
@@ -159,7 +162,7 @@ class NEZHA(BERT):
                 layer=RelativePositionEmbedding,
                 input_dim=embedding_size,
                 output_dim=self.attention_head_size,
-                embeddings_initializer="SinusoidalInitializer",
+                embeddings_initializer=SinusoidalInitializer,
                 name="Embedding-Relative-Position",
                 trainable=False
             )

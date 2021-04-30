@@ -1,5 +1,6 @@
 import pprint
 import json
+import itertools
 
 from .transformer import Transformer
 from .bert import BERT
@@ -30,6 +31,12 @@ transformers = {
     "gpt2": GPT2,
     "gpt2ml": GPT2ML
 }
+
+def list_transformers():
+    models = transformers.keys()
+    apps = ["encoder", "lm", "unilm"]
+    models = ["+".join(i) for i in itertools.product(models, apps)]
+    return models
 
 def load_transformer_configs(config_path, **kwargs):
     configs = {}
@@ -77,11 +84,12 @@ def build_transformer(
         transformer = install_attention_mask(transformer, mask)
 
     model = transformer(**configs).build()
+    if checkpoint_path is not None:
+        model.load_checkpoint(checkpoint_path, verbose)
+
     if verbose:
         model.model.summary(line_length=160)
         pprint.pprint(configs)
         model.show_inputs_outputs()
 
-    if checkpoint_path is not None:
-        model.load_checkpoint(checkpoint_path, verbose)
     return model.model

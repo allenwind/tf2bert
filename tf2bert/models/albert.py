@@ -1,5 +1,9 @@
+import tensorflow as tf
 from tensorflow.keras.layers import *
 
+from tf2bert.layers import MultiHeadAttention
+from tf2bert.layers import LayerNormalization
+from tf2bert.layers import FeedForward
 from .bert import BERT
 
 class ALBERT(BERT):
@@ -7,10 +11,11 @@ class ALBERT(BERT):
     之处是ALBERT对Embedding层进行矩阵低秩分解。不同之处：
     - 跨层权重共现
     - 句子顺序预测（SOP）
-    - Embedding矩阵低秩分解"""
+    - Embedding矩阵低秩分解
+    """
 
     def build_hidden_layer(self, inputs, index):
-        """TransformerBlock基本结构，这里加上Dropout
+        """TransformerBlock基本结构，这里加上Dropout，
         Attention->Dropout->Add->LN->FNN->Dropout->Add->LN"""
         attention_name = "Transformer-MultiHeadSelfAttention"
         callkwargs = {"with_attention_mask": False, "with_position_bias": False}
@@ -95,25 +100,24 @@ class ALBERT(BERT):
                 albert_prefix + "attention_1/self/value/kernel",
                 albert_prefix + "attention_1/self/value/bias",
                 albert_prefix + "attention_1/output/dense/kernel",
-                albert_prefix + "attention_1/output/dense/bias",
+                albert_prefix + "attention_1/output/dense/bias"
             ],
             "Transformer-MultiHeadSelfAttention-Norm": [
                 albert_prefix + "LayerNorm/beta",
-                albert_prefix + "LayerNorm/gamma",
+                albert_prefix + "LayerNorm/gamma"
             ],
             "Transformer-FeedForward": [
                 albert_prefix + "ffn_1/intermediate/dense/kernel",
                 albert_prefix + "ffn_1/intermediate/dense/bias",
                 albert_prefix + "ffn_1/intermediate/output/dense/kernel",
-                albert_prefix + "ffn_1/intermediate/output/dense/bias",
+                albert_prefix + "ffn_1/intermediate/output/dense/bias"
             ],
             "Transformer-FeedForward-Norm": [
                 albert_prefix + "LayerNorm_1/beta",
-                albert_prefix + "LayerNorm_1/gamma",
-            ],
+                albert_prefix + "LayerNorm_1/gamma"
+            ]
         })
         return mapping
-
 
 class UnsharedALBERT(BERT):
     """权重不共享，直接在BERT上加载"""

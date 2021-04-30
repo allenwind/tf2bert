@@ -15,7 +15,7 @@ class SinusoidalInitializer(initializers.Initializer):
                 embeddings[pos, 2 * i + 1] = np.cos(theta)
         return tf.cast(embeddings, dtype)
 
-class AlphaSinCosInitializer(initializers.Initializer):
+class AlphaSinusoidalInitializer(initializers.Initializer):
     """SinusoidalInitializer的另外一种实现，提供一个alpha缩放因子"""
 
     def __init__(self, alpha=1.0):

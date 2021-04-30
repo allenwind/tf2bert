@@ -67,7 +67,8 @@ class FeedForward(tf.keras.layers.Layer):
     def call(self, inputs):
         x = self.i0_dense(inputs)
         for i in range(1, self.activation_size):
-            layer = getattr(self, "i{}_dense".format(i))
+            layer_name = "i{}_dense".format(i)
+            layer = getattr(self, layer_name)
             x = x * layer(inputs)
         x = self.o_dense(x)
         return x

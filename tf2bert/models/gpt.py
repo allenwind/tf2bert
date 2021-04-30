@@ -1,7 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.layers import *
 
-from tf2bert.layers import PositionEmbedding, Embedding
+from tf2bert.layers import Embedding
+from tf2bert.layers import PositionEmbedding
 from .bert import BERT
 from .mask import LMMaskMixIn
 
@@ -46,6 +47,7 @@ class GPT(LMMaskMixIn, BERT):
                 name="Embedding-Token-Segment"
             )
         x = self.build_layer(
+            inputs=x,
             layer=PositionEmbedding,
             input_dim=self.max_position,
             output_dim=self.embedding_size,

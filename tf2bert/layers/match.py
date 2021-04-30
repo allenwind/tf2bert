@@ -1,5 +1,4 @@
 import tensorflow as tf
-from keras.engine import Layer
 
 # 意义匹配层
 
@@ -8,7 +7,7 @@ class MatchingLayer(tf.keras.layers.Layer):
 
     def __init__(self, func="dot", normalize=False, **kwargs):
         super(MatchingLayer, self).__init__(**kwargs)
-        assert func in ("dot", "mul", "plus", "minus", "concat", "abs")
+        assert func in ("dot", "mul", "plus", "minus", "abs", "concat")
         self.func = func
         self.normalize = normalize
 
@@ -16,7 +15,7 @@ class MatchingLayer(tf.keras.layers.Layer):
         self._shape1 = input_shape[0]
         self._shape2 = input_shape[1]
 
-    def call(self, inputs, **kwargs):
+    def call(self, inputs, mask=None, **kwargs):
         x1, x2 = inputs
         if self.func == "dot":
             if self.normalize:
@@ -32,13 +31,13 @@ class MatchingLayer(tf.keras.layers.Layer):
         elif self.func == "minus":
             def func(x, y):
                 return x - y
-        elif self.func == "concat":
-            def func(x, y):
-                return tf.concat([x, y], axis=3)
-        else:
-            # self.func == "abs"
+        elif self.func == "abs":
             def func(x, y):
                 return tf.abs(x - y)
+        else:
+            # self.func == "concat":
+            def func(x, y):
+                return tf.concat([x, y], axis=3)
 
         x1_exp = tf.stack([x1] * self._shape2[1], 2)
         x2_exp = tf.stack([x2] * self._shape1[1], 1)

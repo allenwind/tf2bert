@@ -84,13 +84,13 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         )
 
     def call(self, inputs, mask=None, **kwargs):
-        # bias是Attention矩阵的偏置项，与位置编码和mask相关
+        # bias是Attention矩阵的偏置项，与位置编码和attention mask相关
         q, k, v, *bias = inputs
         if mask is None:
             mask = [None] * 3
         # q_mask对输入的query序列的mask，以便输出的padding部分置0
         # v_mask对输入的value序列的mask，防止attention读取padding部分
-        q_mask, k_mask, v_mask = mask
+        q_mask, k_mask, v_mask = mask[:3]
 
         qw = self.qw_dense(q)
         kw = self.kw_dense(k)
@@ -103,7 +103,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         qkvw = [qw, kw, vw]
         mask = [q_mask, v_mask]
 
-        # 把mask移动到这里处理
+        # TODO把mask移动到这里处理
 
         attn, scores = self._compute_attention(qkvw, bias, mask, **kwargs)
         attn = tf.reshape(attn, (-1, tf.shape(attn)[1], self.num_heads * self.head_size))
@@ -118,9 +118,8 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         qw, kw, vw = qkvw
         q_mask, v_mask = mask
 
-        # dot product Attention
+        # dot product Attention Q*K.T
         # 参考论文：https://arxiv.org/abs/1706.03762
-        # Q*K.T
         a = tf.einsum("bjhd,bkhd->bhjk", qw, kw)
 
         # 处理Attention mask和位置编码
@@ -143,7 +142,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         if with_attention_mask:
             # (batch_size, num_heads, q_len, k_len)
             # (1, 1, q_len, k_len)
-            a = a + attention_mask
+            a = self._add_attention_mask(a, attention_mask)
 
         # 计算padding的mask，消除对softmax的影响
         a = self._compute_sequence_mask(a, v_mask, -1e12)
@@ -162,8 +161,9 @@ class MultiHeadAttention(tf.keras.layers.Layer):
     def _add_position_bias(self):
         """处理位置编码，不同Transformer模型有不同的相对位置编码的种类"""
 
-    def _add_attention_mask(self):
+    def _add_attention_mask(self, a, attention_mask):
         """attention矩阵的mask扩展处理，如语言模型中的三角mask"""
+        return a + attention_mask
 
     def compute_mask(self, inputs, mask=None):
         """计算mask，需要考虑attention scores"""
@@ -171,6 +171,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
             if self.return_attention_scores:
                 return [mask[0], None]
             return mask[0]
+        return mask
 
     def _compute_sequence_mask(self, x, mask, value):
         if mask is None:

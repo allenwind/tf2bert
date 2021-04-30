@@ -1,12 +1,12 @@
 import tensorflow as tf
+from tensorflow.keras.layers import Lambda
 
 # 在tf2bert/tests下有这两种掩码的numpy验证
 
 class LMMaskMixIn:
     """计算下三角Mask，用于语言模型。这里使用MixIn的写法，
     通过继承即可扩展Transformer的mask，但单独使用没有意义。
-    MaskedAttention也使用此mask。
-    """
+    MaskedAttention也使用此mask。"""
 
     def compute_attention_mask(self, inputs=None):
         if self.attention_mask is None:
@@ -18,9 +18,10 @@ class LMMaskMixIn:
                 mask = tf.cast(mask, tf.float32)
                 return - (1 - mask[None, None]) * 1e12
 
+            x = self.inputs[0] # 使用Embedding-Token计算
             self.attention_mask = self.build_layer(
-                inputs=self.inputs[0], # 使用Embedding-Token计算
-                layer=tf.keras.layers.Lambda,
+                inputs=x,
+                layer=Lambda,
                 function=compute_mask,
                 name="Attention-LM-Mask"
             )
@@ -40,9 +41,10 @@ class UniLMMaskMixIn:
                 mask = tf.cast(mask, tf.float32)
                 return - (1 - mask[:, None]) * 1e12
 
+            x = self.inputs[1] # 使用Embedding-Segment计算
             self.attention_mask = self.build_layer(
-                inputs=self.inputs[1], # 使用Embedding-Segment计算
-                layer=tf.keras.layers.Lambda,
+                inputs=x,
+                layer=Lambda,
                 function=compute_mask,
                 name="Attention-UniLM-Mask"
             )

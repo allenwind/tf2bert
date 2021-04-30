@@ -6,7 +6,7 @@ from tf2bert.layers import Embedding
 from tf2bert.layers import LayerNormalization
 from .gpt import GPT
 
-class GPT2(GPT)
+class GPT2(GPT):
     """GPT2网络架构调整和特点：
     - LayerNormalization移动到每个子模块输入之后
     - Attention后添加LayerNormalization
@@ -104,6 +104,7 @@ class GPT2(GPT)
         feed_forward_name = "Transformer-{}-FeedForward".format(index)
         xi = x
         x = self.build_layer(
+            inputs=x,
             layer=LayerNormalization,
             epsilon=self.norm_epsilon,
             hidden_initializer=self.initializer,
@@ -133,6 +134,7 @@ class GPT2(GPT)
     def build_outputs(self, inputs):
         x = inputs
         x = self.build_layer(
+            inputs=x,
             layer=LayerNormalization,
             epsilon=self.norm_epsilon,
             hidden_initializer=self.initializer,

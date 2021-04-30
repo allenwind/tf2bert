@@ -35,7 +35,7 @@ class LayerNormalization(tf.keras.layers.Layer):
                 shape=shape, initializer="ones", name="gamma"
             )
 
-    def call(self, inputs):
+    def call(self, inputs, mask=None):
         if self.center:
             beta = self.beta
         if self.scale:
@@ -128,7 +128,7 @@ class BatchSequenceNormalization(tf.keras.layers.Layer):
         return input_shape
 
 class BatchNormalization(tf.keras.layers.Layer):
-    """在Batch维度的归一化，通常用在图像上，NLP中使用较少"""
+    """在Batch维度的归一化，通常用在图像上，NLP中使用较少，所有暂不实现"""
 
     def __init__(
         self,
@@ -172,10 +172,12 @@ class InstanceNormalization(tf.keras.layers.Layer):
     pass
 
 class MinMaxScaling1D(tf.keras.layers.Layer):
+    """特征维度带外参数的scaling，用于时间序列"""
     
     def __init__(self, params, **kwargs):
         super(MinMaxScaling1D, self).__init__(**kwargs)
         self.params = params
+        self.supports_masking = True
 
     def build(self, input_shape):
         tf.constant(self.params, shape=(1, 1, len(self.params)))

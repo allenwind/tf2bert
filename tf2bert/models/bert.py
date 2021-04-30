@@ -1,10 +1,12 @@
 import tensorflow as tf
 from tensorflow.keras.layers import *
 
-from tf2bert.layers import BiasAdd, PositionEmbedding
+from tf2bert.layers import BiasAdd
+from tf2bert.layers import PositionEmbedding
 from tf2bert.layers import MultiHeadAttention
 from tf2bert.layers import LayerNormalization
-from tf2bert.layers import FeedForward, Embedding
+from tf2bert.layers import FeedForward
+from tf2bert.layers import Embedding
 from tf2bert.layers import DenseEmbedding
 from .transformer import Transformer
 
@@ -31,23 +33,22 @@ class BERT(Transformer):
         self.segment_size = segment_size
         self.pool_activation = pool_activation
         self.mlm_activation = mlm_activation
-        # 指定pooler的类型，默认使用[CLS]
+        # 指定pooler的类型，默认使用[CLS]，目前暂先支持[CLS]
         self.pooler_type = pooler_type
         # 是否进行权重共享
         self.unshared_weights = unshared_weights
 
     def build_inputs(self):
-        """InputToken + InputSegment"""
+        """Input = Input-Token + Input-Segment"""
         x_in = self.build_layer(layer=Input, shape=(self.sequence_length,), name="Input-Token")
         s_in = self.build_layer(layer=Input, shape=(self.sequence_length,), name="Input-Segment")
-        inputs = [x_in]
-        if self.segment_size > 0:
-            inputs.append(s_in)
+        inputs = [x_in, s_in]
+        if self.segment_size <= 0:
+            inputs = inputs[:1]
         return inputs
 
     def build_embeddings(self, inputs):
         """BERT的Embedding = Embedding-Token + Embedding-Position + Embedding-Segment"""
-        inputs = inputs[:]
         if self.segment_size > 0:
             x, s = inputs
         else:
@@ -319,29 +320,29 @@ class BERT(Transformer):
             "Embedding-Position": ["bert/embeddings/position_embeddings"],
             "Embedding-Norm": [
                 "bert/embeddings/LayerNorm/beta",
-                "bert/embeddings/LayerNorm/gamma",
+                "bert/embeddings/LayerNorm/gamma"
             ],
             "Embedding-Mapping": [
                 "bert/encoder/embedding_hidden_mapping_in/kernel",
-                "bert/encoder/embedding_hidden_mapping_in/bias",
+                "bert/encoder/embedding_hidden_mapping_in/bias"
             ],
             "Pooler-Dense": [
                 "bert/pooler/dense/kernel",
-                "bert/pooler/dense/bias",
+                "bert/pooler/dense/bias"
             ],
             "NSP-Proba": [
                 "cls/seq_relationship/output_weights",
-                "cls/seq_relationship/output_bias",
+                "cls/seq_relationship/output_bias"
             ],
             "MLM-Dense": [
                 "cls/predictions/transform/dense/kernel",
-                "cls/predictions/transform/dense/bias",
+                "cls/predictions/transform/dense/bias"
             ],
             "MLM-Norm": [
                 "cls/predictions/transform/LayerNorm/beta",
-                "cls/predictions/transform/LayerNorm/gamma",
+                "cls/predictions/transform/LayerNorm/gamma"
             ],
-            "MLM-Bias": ["cls/predictions/output_bias"],
+            "MLM-Bias": ["cls/predictions/output_bias"]
         }
 
         for index in range(self.num_hidden_layers):
@@ -373,5 +374,3 @@ class BERT(Transformer):
                 ],
             })
         return mapping
-
-

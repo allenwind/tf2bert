@@ -22,5 +22,6 @@ for sentence in load_cws_sentences():
     token_ids = np.array([token_ids])
     segment_ids = np.array([segment_ids])
     features = model.predict([token_ids, segment_ids])
+    print(sentence)
     print(features.shape)
     print(features)

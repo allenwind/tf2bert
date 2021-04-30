@@ -53,6 +53,6 @@ class CheckpointLoader:
         """如果需要权重映射，则在这里返回，否则返回空字典"""
         raise NotImplementedError
 
-    def load_checkpoint(self, checkpoint):
+    def load_checkpoint(self, checkpoint, verbose):
         """从checkpoint文件为layer加载weight"""
         raise NotImplementedError

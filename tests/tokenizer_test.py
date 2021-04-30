@@ -5,6 +5,7 @@ dict_path = "/home/zhiwen/workspace/dataset/bert/chinese_L-12_H-768_A-12/vocab.t
 tokenizer = Tokenizer(dict_path)
 
 tokenizer.show_special()
+tokenizer.save_vocab("../temp/vocab.txt")
 
 for text in load_cws_sentences():
     token_ids, segment_ids = tokenizer.encode(text)
@@ -32,3 +33,16 @@ for text in load_cws_sentences():
     print(segment_ids)
     print(tokenizer.decode(token_ids))
     print(tokenizer._token_mask_id)
+
+tokenizer = Tokenizer(
+    dict_path,
+    use_lower_case=True,
+    with_token_start=True,
+    with_token_end=True
+)
+text1 = "守得云开见月明"
+text2 = "黑天鹅和灰犀牛是两个突发性事件"
+token_ids, segment_ids = tokenizer.encode(text1, text2, mode="SEE")
+print(token_ids)
+token_ids, segment_ids = tokenizer.encode(text1, text2, mode="SESE")
+print(token_ids)

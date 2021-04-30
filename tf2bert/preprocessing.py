@@ -32,8 +32,11 @@ def batch_shuffle(inputs, seed=27382):
     return [np.random.RandomState(773).shuffle(x) \
             for x in inputs]
 
-def batch_to_array(inputs):
-    return [np.array(x) for x in inputs if x]
+def batch_to_array(*inputs):
+    xs = [np.array(x) for x in inputs if x]
+    if len(inputs) == 1:
+        return xs[0]
+    return xs
 
 def batch_paded_generator(X, y, label2id, tokenizer, batch_size, epochs):
     X = tokenizer.transform(X)

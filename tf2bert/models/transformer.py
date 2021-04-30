@@ -64,23 +64,19 @@ class Transformer(ModelBuilder, CheckpointLoader):
         self.embedding_size = embedding_size or hidden_size
         self.sequence_length = sequence_length
         self.reserved_tokens = reserved_tokens
-        self.model_name = model_name
+        self.model_name = model_name if model_name else self.__class__.__name__
         for key, value in kwargs.items():
             setattr(self, key, value)
         self.reset()
 
-    def build(self, checkpoint_path=None):
+    def build(self):
         if self.builted:
             return self.model
         self.reset()
 
         self.build_model()
         self.builted = True
-
-        if checkpoint_path is not None:
-            self.load_checkpoint(checkpoint_path)
-
-        return self.model
+        return self
 
     def reset(self):
         """重置一些参数"""
@@ -94,7 +90,7 @@ class Transformer(ModelBuilder, CheckpointLoader):
         # initializer_range = 0.02
         self.initializer = initializers.TruncatedNormal(stddev=0.02)
 
-    def load_checkpoint(self, checkpoint):
+    def load_checkpoint(self, checkpoint, verbose=False):
         """doc:
         https://tensorflow.google.cn/guide/checkpoint?hl=en
         """
@@ -104,7 +100,13 @@ class Transformer(ModelBuilder, CheckpointLoader):
         for layer, variables in mapping.items():
             layer = self.layers[layer]
             values = [checkpoint.get_tensor(v) for v in variables]
+            if verbose:
+                for variable in variables:
+                    print(layer.name, variable)
             layer.set_weights(values)
+
+    def __call__(self, checkpoint, verbose=False):
+        return self.load_checkpoint(checkpoint, verbose)
 
     def build_layer(self, inputs=None, layer=None, callkwargs=None, **kwargs):
         """创建一个隐层并连接输入返回输出以及保存元数据,
@@ -139,5 +141,5 @@ class Transformer(ModelBuilder, CheckpointLoader):
 
     def show_inputs_outputs(self):
         if self.builted:
-            print(self.model.inputs)
-            print(self.model.outputs)
+            print("inputs:", self.model.inputs)
+            print("outputs:", self.model.outputs)

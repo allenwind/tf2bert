@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.layers import *
+from tensorflow.keras import initializers 
 
 # CNN相关的扩展层
 
@@ -36,7 +37,7 @@ class ResidualGatedConv1D(tf.keras.layers.Layer):
         self.alpha = self.add_weight(
             name="alpha",
             shape=(1,),
-            initializer="zeros",
+            initializer=initializers.Constant(1e-2),
             trainable=True
         )
         self.conv1d = Conv1D(

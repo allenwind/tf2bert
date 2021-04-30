@@ -84,3 +84,8 @@ def load_ner_sentences():
     texts.append("长梁山地处偏僻，山高路险，冬天零下36摄氏度，吃水都困难。")
     labels.append(["B-LOC", "I-LOC", "I-LOC", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O"])
     return texts, labels
+
+def load_sentences():
+    texts = load_cws_sentences()
+    texts.extend(load_ner_sentences()[0])
+    return texts
