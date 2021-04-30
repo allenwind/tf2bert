@@ -188,6 +188,33 @@ def find_entities(text, tags, withO=False):
             yield buf, plabel
     return list(segment_by_tags(text, tags))
 
+def find_entities_chunking(tags):
+    """根据标签提取文本中的实体始止位置，
+    兼容BIO和BIOES标签。
+    """
+    def chunking_by_tags(tags):
+        buf = None
+        plabel = None
+        for i, tag in enumerate(tags):
+            if tag == "O":
+                label = tag
+            else:
+                tag, label = tag.split("-")
+            if tag == "B" or tag == "S":
+                if buf:
+                    yield (plabel, *buf)
+                buf = [i, i+1]
+                plabel = label
+            elif tag == "I" or tag == "E":
+                buf[1] += 1
+        if buf:
+            yield (plabel, *buf)
+    return list(chunking_by_tags(tags))
+
+def batch_find_entities_chunking(batch_tags):
+    """批量操作的find_entities_chunking"""
+    return [find_entities_chunking(tags) for tags in batch_tags]
+
 def find_words(text, tags):
     """通过SBME序列对text分词"""
     def segment_by_tags(text, tags):
