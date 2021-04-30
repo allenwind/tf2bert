@@ -32,7 +32,9 @@ transformers = {
     "gpt2ml": GPT2ML
 }
 
-def list_transformers():
+def list_transformers(with_lm=True):
+    if not with_lm:
+        return list(transformers.keys())
     models = transformers.keys()
     apps = ["encoder", "lm", "unilm"]
     models = ["+".join(i) for i in itertools.product(models, apps)]

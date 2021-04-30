@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tf2bert.text.tokenizers import Tokenizer
 from tf2bert.models import build_transformer
+from tf2bert.models import list_transformers
 
 # 测试BERT模型持久化并加载
 
@@ -34,3 +35,21 @@ model = tf.keras.models.load_model(path)
 feature2 = model.predict([token_ids, segment_ids])
 
 assert np.array_equal(feature1, feature2)
+
+models = list_transformers(with_lm=False)
+models.remove("nezha") # TODO
+for model in models:
+    print("="*20 + model + "="*20)
+    model = build_transformer(
+        model=model, 
+        config_path=config_path, 
+        checkpoint_path=None,
+        with_mlm=False,
+        verbose=False
+    )
+
+    model.save(path)
+    print("saved")
+    del model
+    model = tf.keras.models.load_model(path)
+    print("loaded")

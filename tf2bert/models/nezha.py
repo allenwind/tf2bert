@@ -152,7 +152,7 @@ class NEZHA(BERT):
         return x
 
     def compute_position_bias(self, inputs=None):
-        """处理位置编码，不同Transformer模型有，这里处理相对位置编码。"""
+        """处理位置编码，不同Transformer模型有，这里NEZHA处理相对位置编码。"""
         if self.position_bias is None:
             x = inputs
             x = [x, x]
@@ -162,7 +162,7 @@ class NEZHA(BERT):
                 layer=RelativePositionEmbedding,
                 input_dim=embedding_size,
                 output_dim=self.attention_head_size,
-                embeddings_initializer=SinusoidalInitializer,
+                embeddings_initializer=SinusoidalInitializer(),
                 name="Embedding-Relative-Position",
                 trainable=False
             )
