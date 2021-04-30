@@ -1,5 +1,14 @@
 #
 temp
+vocab.txt
+nlptasks/dataset/ner
+nlptasks/dataset/cws
+nlptasks/dataset/dict.txt
+nlptasks/dataset/results.txt
+nlptasks/weights/weights*
+run_all.sh
+*_TODO.py
+*_TODO.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
