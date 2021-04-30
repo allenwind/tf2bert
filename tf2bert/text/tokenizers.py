@@ -92,8 +92,10 @@ class Tokenizer:
         tokenize_preprocess=None, # 在tokenize前对文本进行tokenize_preprocess操作
         tokenize_postprocess=None, # 在tokenize后对文本进行tokenize_postprocess操作
         token_mapping=None, # 在tokenize后，对token进行mapping
-        **kwargs):
-        self._token_dict =  token_dict or load_vocab(token_dict_path)
+        with_token_start=True,
+        with_token_end=True
+    ):
+        self._token_dict =  token_dict or self.load_vocab(token_dict_path)
         self._token_dict_inv = {v:k for k, v in self._token_dict.items()}
         self._vocab_size = len(self._token_dict)
         self._word_maxlen = word_maxlen
@@ -107,16 +109,33 @@ class Tokenizer:
         self._token_mapping_inv = {v:k for k, v in self._token_mapping.items()}
         self._token_unk = "[UNK]"
         self._token_pad = "[PAD]"
-        self._token_start = "[CLS]"
-        self._token_end = "[SEP]"
+        self._token_start = "[CLS]" if with_token_start else None
+        self._token_end = "[SEP]" if with_token_end else None
         self._token_mask = "[MASK]"
         for token in ["_token_unk", "_token_pad", "_token_start", "_token_end", "_token_mask"]:
-            _token_id = self._token_dict[getattr(self, token)]
+            _token_id = self._token_dict.get(getattr(self, token), None)
             token = token + "_id"
             setattr(self, token, _token_id)
 
     def fit(self, texts):
-        """学习词表"""
+        """学习词表，预训练模型无需再使用该接口"""
+
+    def simplify_token_dict(self, token_dict):
+        """化简token dict"""
+        pass
+
+    def load_vocab(self, dict_path, encoding="utf-8"):
+        """加载Transformer中的vocab.txt文件"""
+        token_dict = {}
+        if not os.path.exists(dict_path):
+            return token_dict
+        with open(dict_path, encoding=encoding) as fp:
+            lines = fp.read().splitlines()
+        for line in lines:
+            token = line.split()
+            token = token[0] if token else line.strip()
+            token_dict[token] = len(token_dict)
+        return token_dict
 
     def save_vocab(self, path, encoding="utf-8"):
         """保存词汇表"""
@@ -204,7 +223,6 @@ class Tokenizer:
             while end > start:
                 sub = word[start:end]
                 if start > 0:
-                    # sub = "##" + sub
                     sub = self.stemize(sub)
                 if sub in self._token_dict:
                     break
@@ -227,7 +245,7 @@ class Tokenizer:
             else:
                 return sequences
 
-    def encode(self, text1, text2=None, maxlen=None, mode="SEE"):
+    def encode(self, text1, text2=None, maxlen=None, mode="SEE", **kwargs):
         """text转成token id和segment id, text2用于句子对任务，如匹配任务"""
         if isinstance(text1, str):
             tokens1 = self.tokenize(text1)
@@ -275,7 +293,7 @@ class Tokenizer:
             batch_segment_ids.append(segment_ids)
         return batch_token_ids, batch_segment_ids
 
-    def decode(self, ids, tokens=None):
+    def decode(self, ids, tokens=None, **kwargs):
         """id序列转为可读文本"""
         tokens = self.ids_to_tokens(ids) or tokens
         tokens = [token for token in tokens if not self._is_special(token)]
