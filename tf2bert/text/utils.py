@@ -64,7 +64,23 @@ def load_cws_sentences():
     texts.append("独立自主和平等互利的原则")
     texts.append("黑天鹅和灰犀牛是两个突发性事件")
     texts.append("黄马与黑马是马，黄马与黑马不是白马，因此白马不是马。")
-    texts.append("The quick brown fox jumps over the lazy dog.")
+    texts.append("空山不见人，但闻人语响。返景入深林，复照青苔上。")
+    texts.append("峨眉山月半轮秋，影入平羌江水流。夜发清溪向三峡，思君不见下渝州。")
+    texts.append("投资界是杂乱、艰难的世界，与我们十年前所熟悉的世界大不相同。我们将了解一系列特别重要的新的威胁、你如何处理它们，以及新的机遇。")
+    # texts.append("The quick brown fox jumps over the lazy dog.")
     texts.append("人的复杂的生理系统的特性注定了一件事情，就是从懂得某个道理到执行之间，是一个漫长的回路。")
+    texts.append("被鲨鱼攻击致死或被出故障的飞机碎片砸死，这两者中哪一种导致死亡的概率更大？幸运的是大部分人都没有经历过这两件事情，但如果问起这个问题，他们多半认为前者的概率更高。这个答案是错误的。在美国，被出故障的飞机碎片砸死的人数大概是被鲨鱼攻击而死亡的人数的3倍。")
     texts.append("除了导致大批旅客包括许多准备前往台北采访空难的新闻记者滞留在香港机场，直到下午2:17分日本亚细亚航空公司开出第一班离港到台北的班机才疏导了滞留在机场的旅客。")
     return texts
+
+def load_ner_sentences():
+    """NER句子示例"""
+    texts = []
+    labels = []
+    texts.append("志愿者们和市里、地区乃至广西团区委、团中央的干部都成了好朋友。")
+    labels.append(["O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "B-ORG", "I-ORG", "I-ORG", "I-ORG", "I-ORG", "O", "B-ORG", "I-ORG", "I-ORG", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O"])
+    texts.append("目前申花队、雅琪队和寰岛队同积7分，名列前茅。")
+    labels.append(["O", "O", "B-ORG", "I-ORG", "I-ORG", "O", "B-ORG", "I-ORG", "I-ORG", "O", "B-ORG", "I-ORG", "I-ORG", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O"])
+    texts.append("长梁山地处偏僻，山高路险，冬天零下36摄氏度，吃水都困难。")
+    labels.append(["B-LOC", "I-LOC", "I-LOC", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O"])
+    return texts, labels
