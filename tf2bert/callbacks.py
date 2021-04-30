@@ -1,5 +1,7 @@
 import os
 import glob
+import time
+import datetime
 
 import tensorflow as tf
 import numpy as np
@@ -7,7 +9,6 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.callbacks import EarlyStopping
 
 class SaveBestModelOnMemory(tf.keras.callbacks.Callback):
-    
     """训练期间, 每个 epoch 检查当前模型在验证集中是否是最好模型, 
     如果是, 则存放到内存中, 否则丢弃. 训练结束后, 使用最
     好的模型作为训练结果. 这种实现比 keras ModelCheckpoint
@@ -16,7 +17,7 @@ class SaveBestModelOnMemory(tf.keras.callbacks.Callback):
     并不是最优.
     """
 
-    def __init__(self, monitor='val_loss', monitor_op=np.less, period=1, path=None):
+    def __init__(self, monitor="val_loss", monitor_op=np.less, period=1, path=None):
         super(SaveBestModelOnMemory, self).__init__()
         self.monitor = monitor
         self.monitor_op = monitor_op
@@ -62,3 +63,36 @@ class SaveBestModelOnMemory(tf.keras.callbacks.Callback):
         
         # 训练结束时设置最优权重
         self.model.set_weights(self.best_weights)
+
+class TimeStopping(tf.keras.callbacks.Callback):
+    """计时停止"""
+
+    def __init__(self, seconds=86400, verbose=0):
+        super().__init__()
+        self.seconds = seconds
+        self.verbose = verbose
+        self.stopped_epoch = None
+
+    def on_train_begin(self, logs=None):
+        self.stopping_time = time.time() + self.seconds
+
+    def on_epoch_end(self, epoch, logs=None):
+        if logs is None:
+            logs = {}
+        if time.time() >= self.stopping_time:
+            self.model.stop_training = True
+            self.stopped_epoch = epoch
+
+    def on_train_end(self, logs=None):
+        if self.stopped_epoch is not None and self.verbose > 0:
+            stopped_epoch = self.stopped_epoch + 1
+            ftime = datetime.timedelta(seconds=self.seconds)
+            print("stopping at epoch {} after training for {}".format(stopped_epoch, ftime))
+
+    def get_config(self):
+        base_configs = super().get_config()
+        configs = {
+            "seconds": self.seconds,
+            "verbose": self.verbose
+        }
+        return dict(list(base_configs.items()) + list(configs.items()))
