@@ -28,7 +28,7 @@ def batch_pad(X, maxlen=None, dtype="int32"):
     )
     return X
 
-def batch_shuffle(inputs, seed=27382):
+def batch_shuffle(*inputs, seed=27382):
     return [np.random.RandomState(773).shuffle(x) \
             for x in inputs]
 
