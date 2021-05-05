@@ -218,3 +218,6 @@ class Attention(MultiHeadAttention):
 
 class TransformerBlock(tf.keras.layers.Layer):
     pass
+
+class SelfAttentionMatrixMask(tf.keras.layers.Layer):
+    """mask"""

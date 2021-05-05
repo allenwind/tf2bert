@@ -45,6 +45,16 @@ class TransitionMatrixInitializer(initializers.Initializer):
     def get_config(self):
         return {"trans": self.trans}
 
+class TokensFilterInitializer(initializers.Initializer):
+    """根据tokens列表构建新的embeddings"""
+
+    def __init__(self, tokens, embeddings):
+        self.tokens = tokens
+        self.embeddings = embeddings
+
+    def __call__(self, shape, dtype=None):
+        pass
+
 class WordEmbeddingInitializer(initializers.Initializer):
     """基于训练好的词向量初始化"""
 
