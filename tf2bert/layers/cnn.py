@@ -61,9 +61,10 @@ class ResidualGatedConv1D(tf.keras.layers.Layer):
 
         inputs = inputs * mask
         x = self.conv1d(inputs)
-        # tf.split
-        o1 = x[:, :, self.filters:]
-        o2 = x[:, :, :self.filters]
+        o1, o2 = tf.split(x, num_or_size_splits=2, axis=-1)
+        # 等价于：
+        # o1 = x[:, :, self.filters:]
+        # o2 = x[:, :, :self.filters]
         # Gated Linear Unit
         x = o1 * tf.sigmoid(o2)
         x = self.layernorm(x)
