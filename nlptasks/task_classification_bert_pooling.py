@@ -25,7 +25,7 @@ def batch_pad(X, maxlen=None, dtype="int32"):
 
 class DataGenerator(tf.keras.utils.Sequence):
 
-    def __init__(self, X, y, tokenizer, um_classes, batch_size, maxlen):
+    def __init__(self, X, y, tokenizer, num_classes, batch_size, maxlen):
         self.X = X
         self.y = y
         self.tokenizer = tokenizer
