@@ -1,5 +1,6 @@
 import time
 import os
+import collections
 import pkg_resources
 from functools import wraps
 import numpy as np
@@ -7,6 +8,65 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 __all__ = ["list_layer_viewers", "list_all_weights", "plot_learning_curve"]
+
+def paddle_to_checkpoint(checkpoint):
+    pass
+
+bert_mapping = collections.OrderedDict([
+    ("layer.", "layer_"),
+    ("word_embeddings.weight", "word_embeddings"),
+    ("position_embeddings.weight", "position_embeddings"),
+    ("token_type_embeddings.weight", "token_type_embeddings"),
+    (".", "/"),
+    ("LayerNorm/weight", "LayerNorm/gamma"),
+    ("LayerNorm/bias", "LayerNorm/beta"),
+    ("weight", "kernel"),
+    ("cls/predictions/bias", "cls/predictions/output_bias"),
+    ("cls/seq_relationship/kernel", "cls/seq_relationship/output_weights"),
+    ("cls/seq_relationship/bias", "cls/seq_relationship/output_bias")
+])
+
+transpose = ("dense.weight", "attention.self.query", "attention.self.key", "attention.self.value")
+
+def pattern_replace(name, mapping=bert_mapping):
+    for old, new in mapping.items():
+        name = name.replace(old, new)
+    return name
+
+def torch_to_checkpoint(torch_file, tf_file=None):
+    try:
+        import torch
+    except ImportError as err:
+        print("install pytorch from: https://pytorch.org/get-started/locally/")
+        raise err
+
+    weights = torch.load(torch_file, map_location="cpu")
+    # kwargs = {}
+    # for name, weight in weights.items():
+    #     weight = weight.numpy()
+    #     if any([x in name for x in transpose]):
+    #         weight = weight.T
+    #     name = pattern_replace(name)
+    #     variable = tf.Variable(weight, name=name)
+    #     kwargs[name] = variable
+
+    # ck = tf.train.Checkpoint(**kwargs)
+    # if tf_file is not None:
+    #     ck.save(tf_file)
+    # return ck
+    with tf.Graph().as_default():
+        for name, weight in weights.items():
+            weight = weight.numpy()
+            if any(x in name for x in transpose):
+                weight = weight.T
+            name = pattern_replace(name)
+            variable = tf.Variable(weight, name=name)
+
+        # TODO:remove compat code
+        with tf.compat.v1.Session() as session:
+            session.run(tf.compat.v1.global_variables_initializer())
+            saver = tf.compat.v1.train.Saver()
+            saver.save(session, tf_file, write_meta_graph=False)
 
 def disable_gpu():
     import os
@@ -22,9 +82,11 @@ def timethis(func):
         return result
     return wrapper
 
-def list_variables(checkpoint):
+def list_variables(checkpoint, string=False):
     """列出checkpoint的所有variables"""
     ck = tf.train.load_checkpoint(checkpoint)
+    if string:
+        return ck.debug_string().decode("utf-8")
     return ck.get_variable_to_shape_map()
 
 def list_dependencies(name):
