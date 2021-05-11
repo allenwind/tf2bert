@@ -4,6 +4,7 @@ import itertools
 
 from .transformer import Transformer
 from .bert import BERT
+from .ernie import ERNIE
 from .roberta import RoBERTa
 from .albert import ALBERT
 from .albert import UnsharedALBERT
@@ -23,6 +24,7 @@ from .training import GradientPenalty
 # 如：bert+lm, bert+encoder
 transformers = {
     "bert": BERT,
+    "ernie": ERNIE,
     "roberta": RoBERTa,
     "albert": ALBERT,
     "unshared-albert": UnsharedALBERT,
@@ -72,6 +74,7 @@ def build_transformer(
     model="bert+encoder",
     config_path=None,
     checkpoint_path=None,
+    with_wrapper=False,
     verbose=True,
     **kwargs):
     configs = load_transformer_configs(config_path, **kwargs)
@@ -93,5 +96,8 @@ def build_transformer(
         model.model.summary(line_length=160)
         pprint.pprint(configs)
         model.show_inputs_outputs()
+
+    if with_wrapper:
+        return model
 
     return model.model
