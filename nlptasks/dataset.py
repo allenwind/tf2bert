@@ -184,11 +184,38 @@ def load_bq_corpus(file=_BQ, shuffle=True):
             x1, x2, label = line.strip().split(",")
         except ValueError:
             # 跳过591个坏样本
-            pass
+            continue
         X1.append(x1)
         X2.append(x2)
         y.append(int(label))
     categoricals = {"匹配":1, "不匹配":0}
+    return X1, X2, y, categoricals
+
+_SNLI = "/home/zhiwen/workspace/dataset/SNLI_Corpus/snli_1.0_{}.csv"
+def load_snli(file, shuffle=True):
+    """纯英文数据集"""
+    assert file in ("train", "dev", "test")
+    file = _SNLI.format(file)
+    with open(file, encoding="utf-8") as fd:
+        lines = fd.readlines()[1:]
+    if shuffle:
+        random.shuffle(lines)
+    categoricals = {"neutral":0, "contradiction":1, "entailment":2}
+    X1 = []
+    X2 = []
+    y = []
+    for line in lines:
+        try:
+            label, x1, x2 = line.strip().split(",")
+        except ValueError:
+            continue
+
+        if label not in categoricals.keys():
+            continue
+
+        X1.append(x1)
+        X2.append(x2)
+        y.append(categoricals[label])
     return X1, X2, y, categoricals
 
 # ==================================================================================== #
