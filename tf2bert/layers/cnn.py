@@ -37,7 +37,7 @@ class ResidualGatedConv1D(tf.keras.layers.Layer):
         self.alpha = self.add_weight(
             name="alpha",
             shape=(1,),
-            initializer=initializers.Constant(1e-2),
+            initializer="zeros",
             trainable=True
         )
         self.conv1d = Conv1D(
