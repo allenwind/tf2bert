@@ -30,6 +30,8 @@
 git clone https://github.com/allenwind/tf2bert.git
 ```
 
+当需要更新时，直接`git pull`获取源码更新。
+
 打开`.bashrc`添加项目路径到`PYTHONPATH`环境变量中，
 
 ```.bashrc
