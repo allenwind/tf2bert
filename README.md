@@ -16,7 +16,7 @@
 - preprocessing
 - utils
 
-本项目只依赖`tensorflow2.x`、`tensorflow-addons`。
+本项目只依赖`tensorflow2.x`、`tensorflow-addons`。目前支持BERT、RoBERTa、ALBERT、NEZHA、GPT等模型，包括CRF层（依赖`tensorflow-addons`）、Normalization、多种支持Mask的Pooling、Embedding（包括多种位置Embedding、HybridEmbedding）、常用激活函数、Metrics等等。
 
 
 
