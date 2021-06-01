@@ -30,6 +30,7 @@ from .cnn import MaskedConv1D
 from .cnn import ResidualGatedConv1D
 from .regularization import RandomChange
 from .match import MatchingLayer
+from .rnn import MaskedBiLSTM
 
 tf.keras.utils.get_custom_objects().update({
     "Embedding": Embedding,
