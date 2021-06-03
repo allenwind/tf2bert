@@ -5,7 +5,7 @@ class MaskedBiLSTM(tf.keras.layers.Layer):
     """支持mask的BiLSTM"""
 
     def __init__(self, hdims, **kwargs):
-        super(MaskBiLSTM, self).__init__(**kwargs)
+        super(MaskedBiLSTM, self).__init__(**kwargs)
         self.hdims = hdims
         self.forward_lstm = LSTM(hdims, return_sequences=True)
         self.backend_lstm = LSTM(hdims, return_sequences=True)
@@ -20,6 +20,7 @@ class MaskedBiLSTM(tf.keras.layers.Layer):
     def call(self, inputs, mask=None):
         if mask is None:
             mask = tf.ones_like(inputs[..., 0])
+        mask = tf.expand_dims(tf.cast(mask, tf.float32), -1)
         x = inputs
         x_forward = self.forward_lstm(x)
         x_backward = self.reverse_sequence(x, mask)
