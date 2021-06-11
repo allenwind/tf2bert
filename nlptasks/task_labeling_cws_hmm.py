@@ -1,9 +1,13 @@
 import itertools
 import random
+import re
 import math
 import numpy as np
 from collections import *
-from tf2bert.text.labels import find_entities, find_words
+from tf2bert.text.labels import find_entities
+from tf2bert.text.labels import find_words
+
+import dataset
 
 class HiddenMarkovChain:
     
@@ -121,11 +125,6 @@ class HiddenMarkovChain:
         ax.set_yticklabels(self.tags, rotation=0)
         plt.show()
 
-import re
-import dataset
-from hmm import HiddenMarkovChain
-from snippets import find_words
-
 class TokenizerBase:
     """分词的基类，继承该类并在find_word实现分词的核心算法"""
 
@@ -175,23 +174,66 @@ class HMMTokenizer(TokenizerBase, HiddenMarkovChain):
     def find_word(self, sentence):
         yield from self.find(sentence)
 
-X, y, labels = dataset.load_random_sentences("train", nums=1000, with_labels=True)
+def compute_sbme_tags(sentence):
+    tags = []
+    for word in sentence:
+        if len(word) == 1:
+            tags.append("S")
+        else:
+            tags.extend(["B"] + ["M"]*(len(word)-2) + ["E"])
+    return np.array(tags)
 
-model = HiddenMarkovChain(labels, task="CWS")
-model.fit(X, y)
-model.plot_trans()
+def gen_random_sentences(nums, maxsize=100):
+    try:
+        import jieba
+    except ImportError as err:
+        print(err)
+        return ""
 
-tokenizer = HMMTokenizer(labels, task="CWS")
-tokenizer.fit(X, y)
+    jieba.initialize()
+    words = {w:v for w,v in jieba.dt.FREQ.items() if v != 0}
+    ws = list(words.keys())
+    p = np.array(list(words.values()))
+    p = p / np.sum(p)
+    for _ in range(nums):
+        size = random.randint(10, maxsize)
+        sentence = np.random.choice(ws, size, p=p)
+        tags = compute_sbme_tags(sentence)
+        yield "".join(sentence), tags
+
+def load_random_sentences(file=None, nums=50000, with_labels=False):
+    X = []
+    y = []
+    for text, tags in gen_random_sentences(nums):
+        X.append(text)
+        y.append(tags)
+    if with_labels:
+        labels = sorted("BMES")
+        return X, y, labels
+    return X, y
+
 if __name__ == "__main__":
+    # 构造随机句子样本
+    X, y, labels = load_random_sentences("train", nums=1000, with_labels=True)
+
+    # 标准HMM参数学习
+    model = HiddenMarkovChain(labels, task="CWS")
+    model.fit(X, y)
+    model.plot_trans()
+
+    # 分块后的HMM参数学习
+    tokenizer = HMMTokenizer(labels, task="CWS")
+    tokenizer.fit(X, y)
+
+    # 两种方案对比
     for text in dataset.load_sentences():
-        # 两种方案对比
         print(model.find(text))
         print(tokenizer.cut(text))
 
-    X, y = dataset.load_cws_ctb6("test")
-    for sentence, labels in zip(X, y):
-        # 对比
+    sentences = dataset.load_ctb6_cws(file="test.txt")
+    for sentence in sentences:
+        labels = compute_sbme_tags(sentence)
+        sentence = "".join(sentence)
         print(find_words(sentence, labels))
         print(model.find(sentence))
         print(tokenizer.cut(sentence))
