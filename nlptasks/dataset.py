@@ -365,7 +365,7 @@ def load_icwb2_pku(file=_PKU):
     sentences = [[w for w in sentence if w] for sentence in sentences]
     return sentences
 
-_CTB6 = "dataset/ctb6_cws/"
+_CTB6 = "dataset/cws/ctb6/"
 def load_ctb6_cws(path=_CTB6, file="train.txt"):
     if not file.endswith(".txt"):
         file += ".txt"
