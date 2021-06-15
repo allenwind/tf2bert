@@ -8,4 +8,6 @@ class RoBERTa(BERT):
     - 使用动态的mask
     - 支持更长的序列
     - 使用Byte Pair Encoding
+
+    [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/pdf/1907.11692.pdf)
     """

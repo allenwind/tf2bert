@@ -76,3 +76,25 @@ for sentence in load_sentences():
 
 更多的例子可参看`nlptasks`目录、`tests`目录代码。
 
+
+
+## 相关链接
+
+[Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+
+[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/pdf/1810.04805.pdf)
+
+[RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/pdf/1907.11692.pdf)
+
+[NEZHA: Neural Contextualized Representation for Chinese Language Understanding](https://arxiv.org/abs/1909.00204)
+
+[Unified Language Model Pre-training for Natural Language Understanding and Generation](https://arxiv.org/abs/1905.03197)
+
+[Are Pre-trained Convolutions Better than Pre-trained Transformers?](https://arxiv.org/abs/2105.03322)
+
+[Synthesizer: Rethinking Self-Attention in Transformer Models](https://arxiv.org/abs/2005.00743)
+
+[MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/abs/2105.01601)
+
+
+

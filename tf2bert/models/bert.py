@@ -11,6 +11,9 @@ from tf2bert.layers import DenseEmbedding
 from .transformer import Transformer
 
 class BERT(Transformer):
+    """BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding
+    用Transformer的encoder堆叠而成的模型，参考论文：https://arxiv.org/pdf/1810.04805.pdf
+    """
 
     def __init__(
         self,
