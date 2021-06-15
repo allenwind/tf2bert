@@ -90,8 +90,13 @@ class MultiHeadAttention(tf.keras.layers.Layer):
             mask = [None] * 3
         # q_mask对输入的query序列的mask，以便输出的padding部分置0
         # v_mask对输入的value序列的mask，防止attention读取padding部分
+        # query, key, value有三种使用场景：
+        # 1. encoder-decoder attention，query来自前一个decoder的输出，key value来自encoder
+        # 2. encoder self-attention，query, key, value均来自上一层encoder
+        # 3. decoder masked self-attention，query, key, value均来自前一层decoder，不过带下三角矩阵mask
         q_mask, k_mask, v_mask = mask[:3]
 
+        # 保证在不同的空间中进行投影，提高模型表达能力
         qw = self.qw_dense(q)
         kw = self.kw_dense(k)
         vw = self.vw_dense(v)
@@ -120,6 +125,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
         # dot product Attention Q*K.T
         # 参考论文：https://arxiv.org/abs/1706.03762
+        # S = Q * K.T
         a = tf.einsum("bjhd,bkhd->bhjk", qw, kw)
 
         # 处理Attention mask和位置编码
@@ -162,7 +168,7 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         """处理位置编码，不同Transformer模型有不同的相对位置编码的种类"""
 
     def _add_attention_mask(self, a, attention_mask):
-        """attention矩阵的mask扩展处理，如语言模型中的三角mask"""
+        """attention矩阵的mask扩展处理，如语言模型中的下三角mask"""
         return a + attention_mask
 
     def compute_mask(self, inputs, mask=None):
