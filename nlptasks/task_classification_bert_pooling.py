@@ -39,7 +39,7 @@ class DataGenerator(tf.keras.utils.Sequence):
     def __getitem__(self, index):
         i = index * self.batch_size
         j = i + self.batch_size
-        batch_token_ids, batch_segment_ids = self.tokenizer.batch_encode(self.X[i:j], self.maxlen)
+        batch_token_ids, batch_segment_ids = self.tokenizer.batch_encode(self.X[i:j], maxlen=self.maxlen)
         batch_token_ids = batch_pad(batch_token_ids, self.maxlen)
         batch_segment_ids = batch_pad(batch_segment_ids, self.maxlen)
         batch_labels = tf.keras.utils.to_categorical(self.y[i:j], num_classes)
@@ -57,14 +57,16 @@ def split_kfolds(X, y, n_splits=8):
     return (X_train, y_train), (X_test, y_test)
 
 config_path = "/home/zhiwen/workspace/dataset/bert/chinese_L-12_H-768_A-12/bert_config.json"
-checkpoint_path = "/home/zhiwen/workspace/dataset/bert/chinese_L-12_H-768_A-12/bert_model.ckpt"
 token_dict_path = "/home/zhiwen/workspace/dataset/bert/chinese_L-12_H-768_A-12/vocab.txt"
+checkpoint_path = "/home/zhiwen/workspace/dataset/bert/chinese_L-12_H-768_A-12/bert_model.ckpt"
 
-X, y, classes = dataset.load_hotel_comment()
+X, y, classes = dataset.load_THUCNews_title_label()
 num_classes = len(classes)
-maxlen = 512
+maxlen = 48 # 注意内存
 
-tokenizer = Tokenizer(token_dict_path, use_lower_case=True)  # 建立分词器
+# 加载Tokenizer
+tokenizer = Tokenizer(token_dict_path, use_lower_case=True)
+# 可以根据需要替换模型
 bert = build_transformer(
     model="bert", 
     config_path=config_path, 
@@ -75,6 +77,7 @@ bert = build_transformer(
 inputs = bert.inputs
 pool = MaskedGlobalMaxPooling1D(return_scores=False)
 x = pool(bert.output)
+x = Dropout(rate=0.2)(x)
 outputs = Dense(num_classes, activation="softmax")(x)
 model = Model(inputs, outputs)
 model.summary()

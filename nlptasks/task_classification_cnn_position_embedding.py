@@ -7,6 +7,8 @@ from tf2bert.layers import MaskedGlobalMaxPooling1D
 from tf2bert.text.tokenizers import CharTokenizer
 import dataset
 
+# NLU中引入Position Embedding加强CNN模型的位置感
+
 def gelu(x):
     return 0.5 * x * (1.0 + tf.math.erf(x / tf.sqrt(2.0)))
 
@@ -76,7 +78,7 @@ def split_kfolds(X, y, n_splits=8):
     y_test = [j for i, j in enumerate(y) if i % n_splits == 1]
     return (X_train, y_train), (X_test, y_test)
 
-X, y, classes = dataset.load_hotel_comment()
+X, y, classes = dataset.load_THUCNews_title_label()
 num_classes = len(classes)
 
 tokenizer = CharTokenizer(mintf=10)
@@ -125,7 +127,7 @@ model.summary()
 if __name__ == "__main__":
     print(__file__)
     batch_size = 64
-    epochs = 10
+    epochs = 100
     X = tokenizer.transform(X)
     (X_train, y_train), (X_test, y_test) = split_kfolds(X, y, 5)
     dataset_train = DataGenerator(X_train, y_train, num_classes, batch_size)

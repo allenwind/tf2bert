@@ -7,7 +7,7 @@ nlptasks/dataset/dict.txt
 nlptasks/dataset/results.txt
 nlptasks/weights/weights*
 run_all.sh
-*_TODO.py
+*_TODO/
 *_TODO.md
 
 # Byte-compiled / optimized / DLL files

@@ -9,6 +9,7 @@ from tf2bert.models import build_transformer
 import dataset
 
 # BERT在文本匹配问题中的应用，siamese架构
+# https://arxiv.org/pdf/1908.10084.pdf
 
 def batch_pad(X, maxlen=None, dtype="int32"):
     if maxlen is None:
@@ -54,7 +55,8 @@ class DataGenerator(tf.keras.utils.Sequence):
                 (batch_token_ids2, batch_segment_ids2)], batch_labels
 
     def on_epoch_end(self):
-        np.random.RandomState(773).shuffle(self.X)
+        np.random.RandomState(773).shuffle(self.X1)
+        np.random.RandomState(773).shuffle(self.X2)
         np.random.RandomState(773).shuffle(self.y)
 
 def split_kfolds(X1, X2, y, n_splits=8):
@@ -86,11 +88,12 @@ bert = build_transformer(
 
 pool = MaskedGlobalMaxPooling1D(return_scores=False)
 dropout = Dropout(rate=0.2)
+layernorm = LayerNormalization()
 
 def bert_encode(x):
     x = bert(x)
     x = pool(x)
-    x = dropout(x)
+    # x = dropout(x)
     return x
 
 def matching(x1, x2):
@@ -99,6 +102,7 @@ def matching(x1, x2):
     # |x-y|
     x4 = Lambda(lambda x: tf.abs(x[0] - x[1]))([x1, x2])
     x = Concatenate()([x1, x2, x3, x4])
+    x = layernorm(x)
     return x
 
 x1_input = Input(shape=(maxlen,), dtype=tf.int32)

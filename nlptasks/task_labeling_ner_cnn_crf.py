@@ -5,7 +5,7 @@ from tensorflow.keras.layers import *
 from tf2bert.text.tokenizers import CharTokenizer
 from tf2bert.layers import CRF, CRFModel
 
-
+# TODO
 # CNN+CRF的NER示例
 
 tokenizer = CharTokenizer(mintf=10)
