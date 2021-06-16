@@ -9,7 +9,7 @@ from .bert import BERT
 class ALBERT(BERT):
     """ALBERT在模型架构上和BERT一致，只不过使用层参数共享起到正则化作用，不同
     之处是ALBERT对Embedding层进行矩阵低秩分解。不同之处：
-    - 跨层权重共现
+    - 跨层权重共享
     - 句子顺序预测（SOP）
     - Embedding矩阵低秩分解
     """
