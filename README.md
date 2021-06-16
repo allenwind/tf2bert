@@ -20,6 +20,25 @@
 
 
 
+## 模型简述
+
+简单梳理一下常见PTMs的特点：
+
+| 模型    | 特点                                                         |
+| ------- | ------------------------------------------------------------ |
+| BERT    | 多层的Transformer Encoder堆叠而成、经典的可训练PositionEmbedding、MLM + NSP |
+| ALBERT  | Factorized Embedding Parameterization、跨层共享参数、引入句子顺序预测（SOP） |
+| RoBERTa | 中文WWM（Whole Word Masking）策略、动态mask、Tokenizer采用Byte Pair Encoding、去掉NSP引入SOP、MLM + SOP |
+| ERNIE   | mask策略引入短语级别（phrase-level mask）与实体级别（entity-level mask）进而在模型中引入实体方面的先验知识 |
+| NEZHA   | 改用经典的相对位置PositionEmbedding、优化算法[LAMB](https://arxiv.org/abs/1904.00962)加速训练 |
+| GPT     | Transformer Decoder堆叠而成、语言模型、Embedding层叠加后不加LN |
+| GPT2    | 更多参数更大的网络容量、LN移动到每个子模块输入之后、Attention后添加LN、输入去掉segment |
+| GPT2ML  | 多语言支持、简化整理GPT2训练                                 |
+| LM      | 计算下三角Mask，用于语言模型                                 |
+| UniLM   | 通过Segment的下三角Mask，使得BERT支持Seq2Seq任务。Mask原理是，对于输入部分，做双向Attention，而对于输出，做单向Attention |
+
+
+
 ## 使用
 
 本项目依赖：`tensorflow2.x`、`tensorflow-addons`。由于更新较快，不使用pip，推荐使用`PYTHONPATH`。
