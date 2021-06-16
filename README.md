@@ -26,7 +26,7 @@
 
 | 模型    | 特点                                                         |
 | ------- | ------------------------------------------------------------ |
-| BERT    | 多层的Transformer Encoder堆叠而成、经典的可训练PositionEmbedding、MLM + NSP |
+| BERT    | 多层的Transformer Encoder堆叠而成、经典的可训练PositionEmbedding、MLM + NSP、Tokenizer采用Byte Pair Encoding、中文版引入WWM（Whole Word Masking） |
 | ALBERT  | Factorized Embedding Parameterization、跨层共享参数、引入句子顺序预测（SOP） |
 | RoBERTa | 中文WWM（Whole Word Masking）策略、动态mask、Tokenizer采用Byte Pair Encoding、去掉NSP引入SOP、MLM + SOP |
 | ERNIE   | mask策略引入短语级别（phrase-level mask）与实体级别（entity-level mask）进而在模型中引入实体方面的先验知识 |
