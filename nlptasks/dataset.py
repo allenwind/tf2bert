@@ -5,6 +5,7 @@ import itertools
 import collections
 import pandas as pd
 import numpy as np
+import tensorflow as tf
 from tf2bert.text.labels import bmes2iobes
 from tf2bert.text.labels import bio2iobes
 from tf2bert.text.labels import iobes2bio
@@ -112,6 +113,23 @@ def load_simplifyweibo_4_moods(file=_MOODS):
     X = df.review.to_list()
     y = df.label.to_list()
     categoricals = {"喜悦":0, "愤怒":1, "厌恶":2, "低落":3}
+    return X, y, categoricals
+
+def load_imdb(file=None):
+    """加载imdb英文数据"""
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.imdb.load_data()
+    word2id = tf.keras.datasets.imdb.get_word_index()
+    id2word = {j:i for i,j in word2id.items()}
+    X = []
+    y = []
+    for sample, label in zip(x_train, y_train):
+        X.append(" ".join([id2word.get(i, " ") for i in sample]))
+        y.append(label)
+
+    for sample, label in zip(x_test, y_test):
+        X.append(" ".join([id2word.get(i, " ") for i in sample]))
+        y.append(label)
+    categoricals = {"正类": 1, "负类": 0}
     return X, y, categoricals
 
 # ==================================================================================== #
