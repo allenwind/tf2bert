@@ -105,6 +105,11 @@ class Transformer(ModelBuilder, CheckpointLoader):
                     print(layer.name, variable)
             layer.set_weights(values)
 
+    def save_checkpoint(self, file, mapping=None):
+        """目前这种实现保存的checkpoint需要使用model.load_weights加载，
+        可参看：https://tensorflow.google.cn/api_docs/python/tf/keras/Model#save_weights"""
+        self.model.save_weights(file, save_format="tf")
+
     def __call__(self, checkpoint, verbose=False):
         return self.load_checkpoint(checkpoint, verbose)
 

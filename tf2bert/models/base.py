@@ -56,3 +56,7 @@ class CheckpointLoader:
     def load_checkpoint(self, checkpoint, verbose):
         """从checkpoint文件为layer加载weight"""
         raise NotImplementedError
+
+    def save_checkpoint(self, file, mapping=None):
+        """保存模型权重为checkpoint格式，命名根据mapping进行映射"""
+        raise NotImplementedError
