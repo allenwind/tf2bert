@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import optimize
+from scipy.spatial import distance
 from tf2bert.text.dp import min_edit_distance
 
 # 简单的文本相似性计算
@@ -8,6 +9,16 @@ from tf2bert.text.dp import min_edit_distance
 # 3. wmd
 # 4. jaccard
 # 5. editdistance
+
+def cosine_similar(v1, v2):
+    """余弦相似度，取值[0,1]之间，值越大越相似"""
+    return 1 - distance.cosine(v1, v2)
+
+def tfidf_cosine_similar(text1, text2):
+    pass
+
+def idf_cosine_similar(text1, text2):
+    pass
 
 def jaccard(text1, text2):
     """jaccard距离"""
@@ -18,9 +29,6 @@ def jaccard(text1, text2):
 def similar_min_editdistance(text1, text2):
     distance = min_edit_distance(text1, text2)
     return 1 - distance / max(len(text1), len(text2))
-
-def tfidf_weights_similar(text1, text2):
-    pass
 
 def wasserstein_distance(p, q, C):
     """Wasserstein距离计算方法，
@@ -64,7 +72,6 @@ def word_mover_distance(x, y):
     return wasserstein_distance(p, q, C)
 
 if __name__ == "__main__":
-
     x = np.random.uniform(size=(64, 12))
     y = np.random.normal(size=(64, 12))
     print(word_mover_distance(x, y))
