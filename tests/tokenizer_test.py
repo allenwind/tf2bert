@@ -42,7 +42,10 @@ tokenizer = Tokenizer(
 )
 text1 = "守得云开见月明"
 text2 = "黑天鹅和灰犀牛是两个突发性事件"
+text3 = "人的复杂的生理系统的特性注定了一件事情，就是从懂得某个道理到执行之间，是一个漫长的回路。"
 token_ids, segment_ids = tokenizer.encode(text1, text2, mode="SEE")
 print(token_ids)
 token_ids, segment_ids = tokenizer.encode(text1, text2, mode="SESE")
+print(token_ids)
+token_ids, segment_ids = tokenizer.encode(text1, maxlen=20)
 print(token_ids)
