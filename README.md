@@ -1,6 +1,16 @@
 # tf2bert
 
+* [介绍](#介绍)
+* [模型简述](#模型简述)
+* [使用](#使用)
+* [权重下载](#权重下载)
+* [相关链接](#相关链接)
+
 本项目旨在拥抱Python3和Tensorflow2.x以及Attention、Transformer、PTMs。
+
+
+
+## 介绍
 
 本框架的目录结构类似于Tensorflow2.x，包括子packages：
 - layers
@@ -28,7 +38,7 @@
 | ------- | ------------------------------------------------------------ |
 | BERT    | 多层的Transformer Encoder堆叠而成、经典的可训练PositionEmbedding、MLM + NSP、Tokenizer采用Byte Pair Encoding、中文版引入WWM（Whole Word Masking） |
 | ALBERT  | Factorized Embedding Parameterization、跨层共享参数、引入句子顺序预测（SOP） |
-| RoBERTa | 中文WWM（Whole Word Masking）策略、动态mask、Tokenizer采用Byte Pair Encoding、去掉NSP引入SOP、MLM + SOP |
+| RoBERTa | 中文WWM（Whole Word Masking）策略、动态mask、Tokenizer采用Byte Pair Encoding、去掉NSP引入SOP、MLM + SOP、更大的数据集、更长的文本序列 |
 | ERNIE   | mask策略引入短语级别（phrase-level mask）与实体级别（entity-level mask）进而在模型中引入实体方面的先验知识 |
 | NEZHA   | 改用经典的相对位置PositionEmbedding、优化算法[LAMB](https://arxiv.org/abs/1904.00962)加速训练 |
 | GPT     | Transformer Decoder堆叠而成、语言模型、Embedding层叠加后不加LN |
@@ -96,12 +106,43 @@ for sentence in load_sentences():
 更多的例子可参看`nlptasks`目录、`tests`目录代码。
 
 
+## 权重下载
+
+以下为模型的Tensorflow权重的下载链接。
+
+BERT/RoBERTa:
+
+- brightmart版roberta: https://github.com/brightmart/roberta_zh
+- ymcui版roberta: https://github.com/ymcui/Chinese-BERT-wwm
+- Google版bert: https://github.com/google-research/bert
+
+
+ALBERT:
+
+- brightmart版albert: https://github.com/brightmart/albert_zh
+- Google原版albert: https://github.com/google-research/ALBERT
+
+NEZHA:
+
+- NEZHA的官方权重: https://github.com/huawei-noah/Pretrained-Language-Model
+
+GPT2ML:
+
+- gpt2-ml: https://github.com/imcaspar/gpt2-ml
+
+XLNet:
+
+- ymcui版的XLNet: https://github.com/ymcui/Chinese-XLNet
+
+
 
 ## 相关链接
 
 [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 
 [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/pdf/1810.04805.pdf)
+
+[Pre-Training with Whole Word Masking for Chinese BERT](https://arxiv.org/abs/1906.08101)
 
 [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/pdf/1907.11692.pdf)
 
