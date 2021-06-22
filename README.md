@@ -37,15 +37,15 @@
 | 模型    | 特点                                                         |
 | ------- | ------------------------------------------------------------ |
 | BERT    | 多层的Transformer Encoder堆叠而成、经典的可训练PositionEmbedding、MLM + NSP、Tokenizer采用Byte Pair Encoding、中文版引入WWM（Whole Word Masking） |
-| ALBERT  | Factorized Embedding Parameterization、跨层共享参数、引入句子顺序预测（SOP） |
+| ALBERT  | Factorized Embedding Parameterization、跨层共享参数（可以理解成一种正则化手段）、引入句子顺序预测（SOP） |
 | RoBERTa | 中文WWM（Whole Word Masking）策略、动态mask、Tokenizer采用Byte Pair Encoding、去掉NSP引入SOP、MLM + SOP、更大的数据集、更长的文本序列 |
 | ERNIE   | mask策略引入短语级别（phrase-level mask）与实体级别（entity-level mask）进而在模型中引入实体方面的先验知识 |
 | NEZHA   | 改用经典的相对位置PositionEmbedding、优化算法[LAMB](https://arxiv.org/abs/1904.00962)加速训练 |
 | GPT     | Transformer Decoder堆叠而成、语言模型、Embedding层叠加后不加LN |
 | GPT2    | 更多参数更大的网络容量、LN移动到每个子模块输入之后、Attention后添加LN、输入去掉segment |
 | GPT2ML  | 多语言支持、简化整理GPT2训练                                 |
-| LM      | 计算下三角Mask，用于语言模型                                 |
-| UniLM   | 通过Segment的下三角Mask，使得BERT支持Seq2Seq任务。Mask原理是，对于输入部分，做双向Attention，而对于输出，做单向Attention |
+| +LM     | 计算下三角Mask，用于语言模型                                 |
+| +UniLM  | 通过Segment的下三角Mask，使得BERT支持Seq2Seq任务。Mask原理是，对于输入部分，做双向Attention，而对于输出，做单向Attention |
 
 
 
@@ -108,8 +108,6 @@ for sentence in load_sentences():
 
 ## 权重下载
 
-以下为模型的Tensorflow权重的下载链接。
-
 BERT/RoBERTa:
 
 - brightmart版roberta: https://github.com/brightmart/roberta_zh
@@ -126,7 +124,7 @@ NEZHA:
 
 - NEZHA的官方权重: https://github.com/huawei-noah/Pretrained-Language-Model
 
-GPT2ML:
+GPT/GPT2/GPT2ML:
 
 - gpt2-ml: https://github.com/imcaspar/gpt2-ml
 
