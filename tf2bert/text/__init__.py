@@ -5,6 +5,5 @@ from . import ngrams
 from . import parallel
 from . import rendering
 from . import segment
-from . import similarity
 from . import tokenizers
 from . import utils

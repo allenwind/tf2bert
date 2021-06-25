@@ -1,5 +1,8 @@
 import numpy as np
 
+def max_sub_array(array):
+    pass
+
 def viterbi_decode(scores, trans, return_score=False):
     """使用viterbi算法求最优路径，
     scores.shape = (seq_len, num_tags)
@@ -32,9 +35,6 @@ def longest_common_prefix(texts):
         if s != text2[i]:
             return text2[:i]
     return text1
-
-def max_sub_array(array):
-    pass
 
 def longest_common_substring(text1, text2):
     """最长公共子字符串，区分大小写"""

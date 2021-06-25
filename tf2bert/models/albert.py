@@ -8,7 +8,9 @@ from .bert import BERT
 
 class ALBERT(BERT):
     """ALBERT在模型架构上和BERT一致，只不过使用层参数共享起到正则化作用，不同
-    之处是ALBERT对Embedding层进行矩阵低秩分解。不同之处：
+    之处是ALBERT对Embedding层进行矩阵低秩分解。ALBERT与BERT的一个显著不同之
+    处是在预训练阶段，模型训练任务把NSP（Next Sentence Prediction）任务改为
+    SOP（Sentence-Order Prediction）任务。前者还包括的不同之处：
     - 跨层权重共享
     - 句子顺序预测（SOP）
     - Embedding矩阵低秩分解
