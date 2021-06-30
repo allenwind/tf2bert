@@ -1,3 +1,4 @@
+import time
 import numpy as np
 
 def find_best_maxlen(X, mode="max"):
@@ -26,6 +27,34 @@ def textQ2B(text):
             c -= 65248
         rtext.append(chr(c))
     return "".join(rtext)
+
+def humanize_bytes(bytesize, precision=3):
+    abbrevs = (
+        (1 << 50, "PB"),
+        (1 << 40, "TB"),
+        (1 << 30, "GB"),
+        (1 << 20, "MB"),
+        (1 << 10, "kB"),
+        (1, "bytes")
+    )
+    if bytesize == 1:
+        return "1 byte"
+    for factor, suffix in abbrevs:
+        if bytesize >= factor:
+            break
+    return "%.*f %s" % (precision, bytesize / factor, suffix)
+
+def humanize_time(seconds):
+    monthname = [None,
+                 "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    year, month, day, hh, mm, ss, *_ = time.localtime(seconds)
+    htime = "%02d/%3s/%04d %02d:%02d:%02d" % (day, monthname[month], year, hh, mm, ss)
+    return htime
+
+print(humanize_time(389084798))
+
 
 class BatchContainer:
     """装载批量数据的容器"""
