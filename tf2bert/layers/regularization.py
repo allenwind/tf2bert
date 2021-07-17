@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 
 class RandomChange(tf.keras.layers.Layer):
@@ -37,3 +38,31 @@ class Dropout(tf.keras.layers.Layer):
         if training:
             return tf.nn.dropout(inputs, rate=1 - self.rate)
         return inputs
+
+class GaussianDropout(tf.keras.layers.Layer):
+    """高斯版Dropout"""
+
+    def __init__(self, rate, **kwargs):
+        super(GaussianDropout, self).__init__(**kwargs)
+        self.rate = rate
+        self.supports_masking = True
+
+    @tf.function
+    def call(self, inputs, training=None):
+        from tensorflow.keras import backend
+        if 0 < self.rate < 1:
+            def noised():
+                noise = tf.random.normal(
+                    shape=tf.shape(inputs),
+                    mean=1.0,
+                    stddev=np.sqrt(self.rate / (1.0 - self.rate)),
+                    dtype=inputs.dtype
+                )
+                return inputs * noise
+            return backend.in_train_phase(noised, inputs, training=training)
+        return inputs
+
+    def get_config(self):
+        base_config = super(GaussianDropout, self).get_config()
+        config = {"rate": self.rate}
+        return dict(list(base_config.items()) + list(config.items()))
