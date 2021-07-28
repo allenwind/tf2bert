@@ -66,3 +66,16 @@ class GaussianDropout(tf.keras.layers.Layer):
         base_config = super(GaussianDropout, self).get_config()
         config = {"rate": self.rate}
         return dict(list(base_config.items()) + list(config.items()))
+
+
+class LayerDropout(tf.keras.layers.Wrapper):
+    """类似于Dropout，不过被drop的内容替换为上一层的输入"""
+
+    def __init__(self, layer, rate, noise_shape, **kwargs):
+        super(LayerDropout, self).__init__(**kwargs)
+        self.layer = layer
+        self.rate = rate
+        self.noise_shape = noise_shape
+
+    def call(self, inputs, training=None):
+        pass
