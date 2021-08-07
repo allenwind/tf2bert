@@ -1,6 +1,7 @@
 #
 temp
 vocab.txt
+metrics_chunking
 nlptasks/dataset/ner
 nlptasks/dataset/cws
 nlptasks/dataset/dict.txt

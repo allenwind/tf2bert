@@ -221,9 +221,3 @@ class Attention(MultiHeadAttention):
     def __init__(self, out_dim, **kwargs):
         super(Attention, self).__init__(1, out_dim, **kwargs)
         self.out_dim = out_dim
-
-class TransformerBlock(tf.keras.layers.Layer):
-    pass
-
-class SelfAttentionMatrixMask(tf.keras.layers.Layer):
-    """mask"""
