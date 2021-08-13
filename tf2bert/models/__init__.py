@@ -4,8 +4,6 @@ import itertools
 
 from .transformer import Transformer
 from .bert import BERT
-# from .ernie import ERNIE
-# from .ernie import ERNIETHU
 from .roberta import RoBERTa
 from .albert import ALBERT
 from .albert import UnsharedALBERT
@@ -25,8 +23,6 @@ from .training import GradientPenalty
 # 如：bert+lm, bert+encoder
 transformers = {
     "bert": BERT,
-    # "ernie": ERNIE,
-    # "erniethu": ERNIETHU,
     "roberta": RoBERTa,
     "albert": ALBERT,
     "unshared-albert": UnsharedALBERT,
