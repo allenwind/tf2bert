@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+from scipy.special import erf
 
 # gelu默认使用erf的实现
 gelu_approximate = False
@@ -36,6 +37,18 @@ def py_softmax(x, axis=-1):
     x = x - x.max(axis=axis, keepdims=True)
     x = np.exp(x)
     return x / x.sum(axis=axis, keepdims=True)
+
+def py_swish(x):
+    """Numpy实现的swish"""
+    return x / (1 + np.exp(-x))
+
+def py_relu(x):
+    """Numpy实现的relu"""
+    return np.maximum(x, 0.0)
+
+def py_gelu(x):
+    """Numpy实现的gelu"""
+    return 0.5 * x * (1 + erf(x / np.sqrt(2)))
 
 tf.keras.utils.get_custom_objects()["gelu"] = gelu
 tf.keras.utils.get_custom_objects()["gelu_erf"] = gelu_erf
