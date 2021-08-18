@@ -1,9 +1,9 @@
 import re
+import os
+import json
+import itertools
 import unicodedata
 import collections
-import os
-import itertools
-import json
 import numpy as np
 
 class CharTokenizer:
@@ -233,6 +233,42 @@ class Tokenizer:
                 tokens.append(sub)
                 start = end
         return tokens
+
+    def compute_mapping(self, text, tokens):
+        """计算原始文本text与tokenize后获得tokens的映射关系，主要是考虑到token可能
+        会对应text中多个连续的char。用于序列标注中的标注一一对应。
+    
+        例如：“3月20” tokenize 会得到 ['[CLS]', '3', '月', '20', '[SEP]']
+        '20' 这个 token 对应原来的两个char，['2', '0']，返回的 token mapping 为
+        [[], [0], [1], [2, 3], []]
+        那么对于序列标注问题就需要特别处理了。
+        """
+        if self._use_lower_case:
+            text = text.lower()
+
+        char_mapping = []
+        normalized_text = "" 
+        for i, ch in enumerate(text, start=0):
+            if self._use_lower_case:
+                ch = unicodedata.normalize("NFD", ch)
+                ch = "".join([c for c in ch if unicodedata.category(c) != "Mn"])
+            ch = "".join([c for c in ch if not (ord(c) == 0 or ord(c) == 65533 or self._is_control(c))])
+            normalized_text += ch
+            char_mapping.extend([i] * len(ch))
+
+        offset = 0
+        mapping = []
+        text = normalized_text
+        for token in tokens:
+            if self._is_special(token):
+                mapping.append([])
+            else:
+                token = self.stem(token)
+                start = offset + text[offset:].index(token)
+                end = start + len(token)
+                mapping.append(char_mapping[start:end])
+                offset = end
+        return mapping
 
     def truncating_sequences(self, maxlen, index, *sequences):
         """截断总长度使得不超过指定长度maxlen"""
