@@ -4,6 +4,7 @@ import tensorflow as tf
 # 需要注意在NER中，有两类指标，
 # 一类是直接根据识别的实体集合计算
 # 另外一类是根据实体类别及其位置计算，后者更严格
+# 只要知道序列的mask就容易计算了 mask = y_pred._keras_mask
 
 
 class ChunkingPRF1(tf.keras.metrics.Metric):
@@ -22,7 +23,6 @@ class ChunkingPRF1(tf.keras.metrics.Metric):
 
     def result(self):
         pass
-
 
 class ChunkingRegionPRF1(ChunkingPRF1):
     """CWS的precision、recall、F1指标"""
@@ -61,3 +61,15 @@ class PRF1Score:
         self.num_true += len(y_true)
         self.num_pred += len(y_pred)
 
+def evaluate_prf(y_true, y_pred):
+    X = Y = Z = 1e-10
+    for R, T in zip(y_pred, y_true):
+        R = set(R)
+        T = set(T)
+        X += len(R & T)
+        Y += len(R)
+        Z += len(T)
+    precision = X / Y
+    recall = X / Z
+    f1 = 2 * X / (Y + Z)
+    return precision, recall, f1

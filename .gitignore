@@ -1,6 +1,8 @@
 #
 temp
 vocab.txt
+best_model.weights.*
+checkpoint
 metrics_chunking
 nlptasks/dataset/ner
 nlptasks/dataset/cws

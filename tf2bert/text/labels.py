@@ -3,12 +3,15 @@ import collections
 
 # 与标签相关的处理，序列标注中常用标签的转换
 
+def inspect_dataset(X_train, y_train, X_dev, y_dev):
+    """可视化数据集元信息"""
+
 class TaggingTokenizer:
     """BIOES、BIO、BMES标签映射，标签的转换和逆转换"""
 
     def fit(self, tags):
         self.counter = collections.Counter(itertools.chain(*tags))
-        self.labels = sorted(set(self.counter))
+        self.labels = sorted(set(self.counter), reverse=True)
         self.id2label = {i:j for i,j in enumerate(self.labels)}
         self.label2id = {j:i for i,j in self.id2label.items()}
 
@@ -16,7 +19,7 @@ class TaggingTokenizer:
         c = dict(self.counter)
         if density:
             total = sum(c.values())
-            c = {i:j/total for i,j in c.items()}
+            c = {i:"{.3f}".format(j/total) for i,j in c.items()}
         return c
 
     def encode(self, tags):
