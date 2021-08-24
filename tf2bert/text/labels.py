@@ -234,3 +234,17 @@ def find_words(text, tags):
         if buf:
             yield buf
     return list(segment_by_tags(text, tags))
+
+def find_words_regions(text, tags, with_word=False):
+    """返回[(word, start, end), ...]或[(start, end), ...]形式"""
+    segments = find_words(text, tags)
+    regions = []
+    start = 0
+    for word in segments:
+        end = start + len(word)
+        if with_word:
+            regions.append((word, start, end))
+        else:
+            regions.append((start, end))
+        start = end
+    return regions

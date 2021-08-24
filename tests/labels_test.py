@@ -4,6 +4,7 @@ from tf2bert.text.labels import bio2iobes
 from tf2bert.text.labels import batch_bio2iobes
 from tf2bert.text.labels import batch_iobes2bio
 from tf2bert.text.labels import TaggingTokenizer
+from tf2bert.text.labels import find_words_regions
 from tf2bert.text.utils import load_ner_sentences
 
 # 测试完整性
@@ -47,3 +48,10 @@ rlabels = tagger.batch_decode(ids)
 
 for label1, label2 in zip(labels, rlabels):
     assert label1, label2
+
+text = "我爱北京天安门"
+tags = "SSBEBME"
+
+regions = find_words_regions(text, tags, with_word=True)
+print(regions)
+assert regions == [("我", 0, 1), ("爱", 1, 2), ("北京", 2, 4), ("天安门", 4, 7)]
