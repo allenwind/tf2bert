@@ -162,8 +162,7 @@ def check_tags(tags, fix=False):
     """检测tags序列是否符合规则"""
 
 def find_entities(text, tags, withO=False):
-    """根据标签提取文本中的实体，适合BIO和BIOES标签，
-    withO是否返回O标签内容。
+    """根据标签提取文本中的实体，适合BIO和BIOES标签，withO是否返回O标签内容。
     """
     def segment_by_tags(text, tags):
         buf = ""
@@ -192,8 +191,7 @@ def find_entities(text, tags, withO=False):
     return list(segment_by_tags(text, tags))
 
 def find_entities_chunking(tags):
-    """根据标签提取文本中的实体始止位置，
-    兼容BIO和BIOES标签。
+    """根据标签提取文本中的实体始止位置，兼容BIO和BIOES标签。
     """
     def chunking_by_tags(tags):
         buf = None
@@ -234,6 +232,15 @@ def find_words(text, tags):
         if buf:
             yield buf
     return list(segment_by_tags(text, tags))
+
+def to_regions(segments):
+    regions = []
+    start = 0
+    for word in segments:
+        end = start + len(word)
+        regions.append((start, end))
+        start = end
+    return regions
 
 def find_words_regions(text, tags, with_word=False):
     """返回[(word, start, end), ...]或[(start, end), ...]形式"""
