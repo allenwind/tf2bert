@@ -7,13 +7,15 @@ def viterbi_decode(scores, trans, return_score=False):
     """使用viterbi算法求最优路径，
     scores.shape = (seq_len, num_tags)
     trans.shape = (num_tags, num_tags)
-    dp = np.zeros_like(scores)
     """
+    dp = np.zeros_like(scores)
     backpointers = np.zeros_like(scores, dtype=np.int32)
     dp[0] = scores[0]
     for t in range(1, scores.shape[0]):
+        # 状态转移分值
         v = np.expand_dims(dp[t-1], axis=1) + trans
         dp[t] = scores[t] + np.max(v, axis=0)
+        # 记录上一时刻概率最大结点
         backpointers[t] = np.argmax(v, axis=0)
 
     viterbi = [np.argmax(dp[-1])]
