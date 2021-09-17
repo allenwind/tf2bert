@@ -10,7 +10,7 @@ def gelu_erf(x):
 
 def gelu_tanh(x):
     """https://arxiv.org/abs/1606.08415"""
-    cdf = 0.5 * (1.0 + tf.tanh((np.sqrt(2 / 3.141592653589793) * (x + 0.044715 * tf.pow(x, 3)))))
+    cdf = 0.5 * (1.0 + tf.tanh(np.sqrt(2 / 3.141592653589793) * (x + 0.044715 * tf.pow(x, 3))))
     return x * cdf
 
 gelu = gelu_tanh if gelu_approximate else gelu_erf
