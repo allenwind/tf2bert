@@ -38,7 +38,7 @@
 | ------- | ------------------------------------------------------------ |
 | BERT    | 多层的Transformer Encoder堆叠而成、经典的可训练PositionEmbedding、MLM + NSP、Tokenizer采用Byte Pair Encoding、中文版引入WWM（Whole Word Masking） |
 | ALBERT  | Factorized Embedding Parameterization、跨层共享参数（可以理解成一种正则化手段）、引入句子顺序预测（SOP） |
-| RoBERTa | 中文WWM（Whole Word Masking）策略、动态mask、Tokenizer采用Byte Pair Encoding、去掉NSP引入SOP、MLM + SOP、更大的数据集、更长的文本序列 |
+| RoBERTa | 中文WWM（Whole Word Masking）策略、动态mask、Tokenizer采用Byte Pair Encoding、去掉NSP、MLM、更大的数据集、更长的文本序列 |
 | ERNIE   | mask策略引入短语级别（phrase-level mask）与实体级别（entity-level mask）进而在模型中引入实体方面的先验知识 |
 | NEZHA   | 改用经典的相对位置PositionEmbedding、优化算法[LAMB](https://arxiv.org/abs/1904.00962)加速训练 |
 | GPT     | Transformer Decoder堆叠而成、语言模型、Embedding层叠加后不加LN |
