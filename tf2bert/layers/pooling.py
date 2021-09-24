@@ -71,7 +71,7 @@ class AttentionPooling1D(Layer):
             use_bias=False
         )
 
-    def call(self, inputs, mask=None):
+    def call(self, inputs, mask=None, training=None):
         if mask is None:
             mask = 1
         else:
@@ -80,6 +80,7 @@ class AttentionPooling1D(Layer):
         # 计算每个 time steps 权重
         w = self.k_dense(inputs)
         w = self.o_dense(w)
+        # TODO:add gaussian noise
         # 处理 mask
         w = w - (1 - mask) * 1e12
         # 权重归一化
@@ -173,4 +174,37 @@ class MaskedMinVariancePooling(Layer):
         x = tf.reduce_sum(inputs * w * mask, axis=1)
         if self.return_scores:
             return x, w
+        return x
+
+class GlobalSmoothMaxPooling1D(tf.keras.layers.Layer):
+
+    def __init__(self, smooth_func="softmax", return_scores=False, **kwargs):
+        super(GlobalSmoothMaxPooling1D, self).__init__(**kwargs)
+        self.smooth_func = smooth_func
+        self.return_scores = return_scores
+
+    def build(self, input_shape):
+        self.alpha = self.add_weight(
+            name="alpha",
+            shape=(1, 1, input_shape[-1]),
+            initializer=tf.keras.initializers.Ones()
+        )
+
+    def call(self, inputs, mask=None):
+        if mask is None:
+            mask = 1.0
+        else:
+            # 扩展维度便于广播
+            mask = tf.expand_dims(tf.cast(mask, tf.float32), -1)
+        x = inputs
+        x = x * self.alpha
+        x = x - (1 - mask) * 1e12 # 用一个大的负数mask
+        if self.smooth_func == "softmax":
+            x = tf.math.softmax(x, axis=1)
+            x = tf.reduce_sum(x * inputs, axis=1)
+        elif self.smooth_func == "logsumexp":
+            x = tf.reduce_logsumexp(x, axis=1, keepdims=True) / self.alpha
+            x = tf.squeeze(x, axis=1)
+        else:
+            x = tf.keras.layers.GlobalMaxPooling1D()(x)
         return x
