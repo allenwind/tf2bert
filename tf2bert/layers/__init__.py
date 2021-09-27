@@ -11,6 +11,7 @@ from .pooling import MaskedGlobalAveragePooling1D
 from .pooling import AttentionPooling1D
 from .pooling import MaskedMinVariancePooling
 from .pooling import MultiHeadAttentionPooling1D
+from .pooling import GlobalSmoothMaxPooling1D
 from .normalization import LayerNormalization
 from .normalization import BatchNormalization
 from .attention import MultiHeadAttention
