@@ -134,6 +134,8 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         if with_attention_mask:
             attention_mask = bias[0]
         if with_position_bias == "relative_position":
+            # 相对位置编码参考论文：https://arxiv.org/pdf/1803.02155.pdf
+            # 这里的实现就是论文上的方法展开来直接计算
             n = int(with_attention_mask)
             position_bias = bias[n]
             a = a + tf.einsum("bjhd,jkd->bhjk", qw, position_bias)

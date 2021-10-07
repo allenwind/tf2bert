@@ -7,7 +7,7 @@ from .bert import BERT
 from .mask import LMMaskMixIn
 
 class GPT(LMMaskMixIn, BERT):
-    """GPT是语言模型，Embedding层和输出以及Attention Mask与BERT有差异。
+    """GPT是单向自回归语言模型，Embedding层和输出以及Attention Mask与BERT有差异。
     实质上是Transformer的Decoder，可参看：
     https://github.com/openai/finetune-transformer-lm"""
 

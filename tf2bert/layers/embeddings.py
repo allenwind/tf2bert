@@ -241,7 +241,9 @@ class SimplePositionEmbedding(tf.keras.layers.Layer):
 class RelativePositionEmbedding(tf.keras.layers.Layer):
     """来自Google的论文，经典的相对位置编码，即把原来对(i,j)的依赖变为对i-j的依赖。
     需要配合Relation-aware Self-Attention使用。本项目中，华为的NEZHA使用到该位置编码。
-    可参考论文：https://arxiv.org/abs/1803.02155。"""
+    可参考论文：https://arxiv.org/abs/1803.02155。可以参考解读文章：
+    https://allenwind.github.io/blog/9582/
+    """
 
     def __init__(self, input_dim, output_dim, embeddings_initializer="zeros", **kwargs):
         super(RelativePositionEmbedding, self).__init__(**kwargs)

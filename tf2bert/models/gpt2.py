@@ -9,7 +9,7 @@ from .gpt import GPT
 class GPT2(GPT):
     """GPT2网络架构调整和特点：
     - LayerNormalization移动到每个子模块输入之后
-    - Attention后添加LayerNormalization
+    - 在最终的SelfAttention后添加LayerNormalization
     - Byte Pair Encoding
 
     参考：https://github.com/openai/gpt-2"""

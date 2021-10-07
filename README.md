@@ -48,6 +48,11 @@
 | +UniLM  | 通过Segment的下三角Mask，使得BERT支持Seq2Seq任务。Mask原理是，对于输入部分，做双向Attention，而对于输出，做单向Attention |
 
 
+预训练模型为什么能成？
+- 大规模高质量的无监督数据
+- 设计恰当的自（无）监督学习策略
+- 基于SelfAttention的Transformer是无偏置的特征提取器
+
 
 ## 使用
 

@@ -12,8 +12,10 @@ class ALBERT(BERT):
     处是在预训练阶段，模型训练任务把NSP（Next Sentence Prediction）任务改为
     SOP（Sentence-Order Prediction）任务。前者还包括的不同之处：
     - 跨层权重共享
-    - 句子顺序预测（SOP）
-    - Embedding矩阵低秩分解
+    - 句子顺序预测（SOP，相当于加大学习难度。原来NSP可以通过上下文与主题进行判断，
+      而SOP只能根据上下文判断）
+    - Embedding矩阵低秩分解（其实就是onehot隐射到相对较低维度的向量，然后再使用
+      Dense升维到Attention输入的维度，这样打幅减少参数量）
     """
 
     def build_hidden_layer(self, inputs, index):

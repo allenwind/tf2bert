@@ -37,7 +37,7 @@ class Transformer(ModelBuilder, CheckpointLoader):
         num_hidden_layers,
         num_attention_heads,
         intermediate_size,
-        hidden_act,
+        hidden_act="relu",
         embedding_size=None,
         dropout_rate=0,
         attention_dropout_rate=0,
