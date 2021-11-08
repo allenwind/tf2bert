@@ -35,14 +35,14 @@ class FocalLoss(tf.keras.losses.Loss):
         self.alpha = alpha # 权重调节因子
         self.gamma = gamma # 再平衡因子
 
-    # def call(self, y_true, y_pred):
-    #     y_pred = tf.clip_by_value(y_pred, 1e-7, 1.0-1e-7)
-    #     loss = - self.alpha * y_true * tf.math.log(y_pred) * (1 - y_pred) ** self.gamma \
-    #            - (1 - self.alpha) * (1 - y_true) * tf.math.log(1 - y_pred) * y_pred ** self.gamma
-    #     return loss
-
     def call(self, y_true, y_pred):
-        return - y_true * (1 - y_pred) ** self.gamma * tf.math.log(y_pred)
+        y_pred = tf.clip_by_value(y_pred, 1e-7, 1.0-1e-7)
+        loss = - self.alpha * y_true * tf.math.log(y_pred) * tf.pow((1 - y_pred), self.gamma) \
+               - (1 - self.alpha) * (1 - y_true) * tf.math.log(1 - y_pred) * tf.pow(y_pred, self.gamma)
+        return loss
+
+    # def call(self, y_true, y_pred):
+    #     return - y_true * (1 - y_pred) ** self.gamma * tf.math.log(y_pred)
 
 class DataGenerator(tf.keras.utils.Sequence):
 
