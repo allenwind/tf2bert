@@ -7,7 +7,7 @@ from tf2bert.layers import MaskedGlobalMaxPooling1D
 from tf2bert.text.tokenizers import CharTokenizer
 import dataset
 
-# 标签光滑
+# 标签光滑的应用
 
 def gelu(x):
     return 0.5 * x * (1.0 + tf.math.erf(x / tf.sqrt(2.0)))

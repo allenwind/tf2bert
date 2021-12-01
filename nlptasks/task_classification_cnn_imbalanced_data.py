@@ -13,6 +13,7 @@ import dataset
 # 1.类别权重方法
 # 2.上采样或下采样方法，使得每个batch内样本平衡
 # 3.从输出参数阈值判别，默认是alpha=0.5，可以调小
+# 4.调整loss方法，如focal loss
 
 def gelu(x):
     return 0.5 * x * (1.0 + tf.math.erf(x / tf.sqrt(2.0)))
@@ -39,7 +40,7 @@ def compute_class_weight(y):
     n = len(counter)
     for c, v in counter.items():
         # w = total / (n * v)
-        class_weight[c] = total / (n * v)
+        class_weight[c] = (1 / v) * (total / n)
     return class_weight
 
 def over_sampling(X, y):

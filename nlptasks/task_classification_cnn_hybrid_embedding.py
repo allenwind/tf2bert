@@ -1,4 +1,0 @@
-
-
-
-# HybridEmbedding例子

@@ -8,7 +8,7 @@ from tf2bert.text.tokenizers import Tokenizer
 from tf2bert.models import build_transformer
 import dataset
 
-# BERT在文本匹配问题中的应用，siamese架构
+# BERT在文本匹配问题中的应用，siamese双塔架构
 # https://arxiv.org/pdf/1908.10084.pdf
 
 def batch_pad(X, maxlen=None, dtype="int32"):

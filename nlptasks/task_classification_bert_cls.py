@@ -7,7 +7,7 @@ from tf2bert.text.tokenizers import Tokenizer
 from tf2bert.models import build_transformer
 import dataset
 
-# BERT在分类问题中的应用，使用[CLS]输出
+# BERT在文本分类问题中的应用，使用[CLS]输出
 
 def batch_pad(X, maxlen=None, dtype="int32"):
     if maxlen is None:

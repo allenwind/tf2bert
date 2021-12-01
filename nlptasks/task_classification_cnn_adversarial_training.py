@@ -8,7 +8,7 @@ from tf2bert.text.tokenizers import CharTokenizer
 from tf2bert.activations import gelu
 import dataset
 
-# 对抗训练
+# 对抗训练例子
 
 def gelu(x):
     return 0.5 * x * (1.0 + tf.math.erf(x / tf.sqrt(2.0)))

@@ -8,7 +8,7 @@ from tf2bert.text.tokenizers import Tokenizer
 from tf2bert.models import build_transformer
 import dataset
 
-# BERT在文本匹配问题中的应用，使用[CLS]的输出
+# BERT在文本匹配问题中的应用，使用[CLS]的输出，S1与S2之间使用[SEP]隔开
 
 def batch_pad(X, maxlen=None, dtype="int32"):
     if maxlen is None:
